@@ -1,11 +1,11 @@
-#include "Graphics/GLErrorHelper.hpp"
+#include "Graphics/helper.hpp"
 
 #include <iostream>
 
 namespace Y {
 namespace graphics{
 
-    void CheckGLError()  {
+    void checkGLError()  {
         GLenum error = glGetError();
         bool assert = error != GL_NO_ERROR;
         while (error != GL_NO_ERROR) {
@@ -19,7 +19,7 @@ namespace graphics{
                 default: errstr = std::to_string(error); break;
             }
 
-            Y_ERROR("OpenGL Error -> {}" , errstr.c_str());
+            // Y_ERROR("OpenGL Error -> {}" , errstr.c_str());
             std::cout << "OpenGl Error -> {" << errstr << "}" << std::endl;
             error = glGetError();
         }

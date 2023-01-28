@@ -1,13 +1,12 @@
-#ifndef LOG_HPP
-#define LOG_HPP
+#ifndef LOGGER_HPP
+#define LOGGER_HPP
 
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
-
 #include <stdlib.h>
 
-#define CONSOLE_LOGGER_NAME "EngineY Console Log" 
-#define ERROR_LOGGER_NAME "EngineY Error Log"
+#define Y_CONSOLE_LOGGER_NAME "Engine Console Log"
+#define Y_ERROR_LOGGER_NAME "Engine Error Log"
 
 #if defined(Y_PLATFORM_WINDOWS)
 #define Y_BREAK __debugbreak();
@@ -18,30 +17,30 @@
 #endif
 
 #define Y_INFO(...) \
-    if (spdlog::get(CONSOLE_LOGGER_NAME) != nullptr) { \
-        spdlog::get(CONSOLE_LOGGER_NAME)->info(__VA_ARGS__);\
+    if (spdlog::get(Y_CONSOLE_LOGGER_NAME) != nullptr) { \
+        spdlog::get(Y_CONSOLE_LOGGER_NAME)->info(__VA_ARGS__);\
     }
 
 #ifndef Y_CONFIG_RELEASE
 #define Y_TRACE(...) \
-    if (spdlog::get(CONSOLE_LOGGER_NAME) != nullptr) { \
-        spdlog::get(CONSOLE_LOGGER_NAME)->trace(__VA_ARGS__);\
+    if (spdlog::get(Y_CONSOLE_LOGGER_NAME) != nullptr) { \
+        spdlog::get(Y_CONSOLE_LOGGER_NAME)->trace(__VA_ARGS__);\
     }
 #define Y_DEBUG(...) \
-    if (spdlog::get(CONSOLE_LOGGER_NAME) != nullptr) { \
-        spdlog::get(CONSOLE_LOGGER_NAME)->debug(__VA_ARGS__);\
+    if (spdlog::get(Y_CONSOLE_LOGGER_NAME) != nullptr) { \
+        spdlog::get(Y_CONSOLE_LOGGER_NAME)->debug(__VA_ARGS__);\
     }
 #define Y_WARN(...) \
-    if (spdlog::get(ERROR_LOGGER_NAME) != nullptr) { \
-        spdlog::get(ERROR_LOGGER_NAME)->warn(__VA_ARGS__);\
+    if (spdlog::get(Y_ERROR_LOGGER_NAME) != nullptr) { \
+        spdlog::get(Y_ERROR_LOGGER_NAME)->warn(__VA_ARGS__);\
     }
 #define Y_ERROR(...) \
-    if (spdlog::get(ERROR_LOGGER_NAME) != nullptr) { \
-        spdlog::get(ERROR_LOGGER_NAME)->error(__VA_ARGS__);\
+    if (spdlog::get(Y_ERROR_LOGGER_NAME) != nullptr) { \
+        spdlog::get(Y_ERROR_LOGGER_NAME)->error(__VA_ARGS__);\
     }
 #define Y_FATAL(...) \
-    if (spdlog::get(ERROR_LOGGER_NAME) != nullptr) { \
-        spdlog::get(ERROR_LOGGER_NAME)->critical(__VA_ARGS__);\
+    if (spdlog::get(Y_ERROR_LOGGER_NAME) != nullptr) { \
+        spdlog::get(Y_ERROR_LOGGER_NAME)->critical(__VA_ARGS__);\
     }
 #define Y_ASSERT(x , msg) \
     if ((x)) {} \

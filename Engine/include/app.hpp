@@ -10,7 +10,6 @@
 #include <string>
 
 namespace Y {
-
     class App {
         public:
             virtual ~App() {}

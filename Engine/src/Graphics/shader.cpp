@@ -1,12 +1,14 @@
 #include "log.hpp"
-
 #include "Graphics/shader.hpp"
-#include "Graphics/GLErrorHelper.hpp"
+#include "Graphics/helper.hpp"
+
+#include "glad/glad.h"
+#include "glm/gtc/type_ptr.hpp"
 
 namespace Y {
 namespace graphics {
 
-    int Shader::GetUniformLocation(const std::string& name) {
+    int Shader::getUniformLocation(const std::string& name) {
 
         auto itr = uniformLocations.find(name);
         if (itr == uniformLocations.end()) {
@@ -72,73 +74,73 @@ namespace graphics {
         glDeleteProgram(programID); Y_CHECK_GL_ERROR;
     }
 
-    void Shader::Bind() {
+    void Shader::bind() {
         glUseProgram(programID); Y_CHECK_GL_ERROR;
         return;
     }
     
-    void Shader::Unbind() {
+    void Shader::unbind() {
         glUseProgram(0); Y_CHECK_GL_ERROR;
         return;
     }
 
-    void Shader::SetUniformInt(const std::string& name , int val) {
+    void Shader::setUniformInt(const std::string& name , int val) {
         glUseProgram(programID); Y_CHECK_GL_ERROR;
-        glUniform1i(GetUniformLocation(name) , val); Y_CHECK_GL_ERROR;
+        glUniform1i(getUniformLocation(name) , val); Y_CHECK_GL_ERROR;
         return;
     }
 
-    void Shader::SetUniformFloat(const std::string& name , float val) {
+    void Shader::setUniformFloat(const std::string& name , float val) {
         glUseProgram(programID); Y_CHECK_GL_ERROR;
-        glUniform1f(GetUniformLocation(name) , val); Y_CHECK_GL_ERROR;
+        glUniform1f(getUniformLocation(name) , val); Y_CHECK_GL_ERROR;
         return;
     }
 
-    void Shader::SetUniformFloat2(const std::string& name , float val1 , float val2) {
+    void Shader::setUniformFloat2(const std::string& name , float val1 , float val2) {
         glUseProgram(programID); Y_CHECK_GL_ERROR;
-        glUniform2f(GetUniformLocation(name) , val1 , val2);Y_CHECK_GL_ERROR;
+        glUniform2f(getUniformLocation(name) , val1 , val2);Y_CHECK_GL_ERROR;
         return;
     }
 
-    void Shader::SetUniformFloat2(const std::string& name , const glm::vec2& val) {
+    void Shader::setUniformFloat2(const std::string& name , const glm::vec2& val) {
         glUseProgram(programID); Y_CHECK_GL_ERROR;
-        glUniform2f(GetUniformLocation(name) , val.x , val.y);Y_CHECK_GL_ERROR;
+        glUniform2f(getUniformLocation(name) , val.x , val.y);Y_CHECK_GL_ERROR;
         return;
     }
 
-    void Shader::SetUniformFloat3(const std::string& name , float val1 , float val2 , float val3) {
+    void Shader::setUniformFloat3(const std::string& name , float val1 , float val2 , float val3) {
         glUseProgram(programID); Y_CHECK_GL_ERROR;
-        glUniform3f(GetUniformLocation(name) , val1 , val2 , val3); Y_CHECK_GL_ERROR;
+        glUniform3f(getUniformLocation(name) , val1 , val2 , val3); Y_CHECK_GL_ERROR;
         return;
     }
 
-    void Shader::SetUniformFloat3(const std::string& name , const glm::vec3& val) {
+    void Shader::setUniformFloat3(const std::string& name , const glm::vec3& val) {
         glUseProgram(programID); Y_CHECK_GL_ERROR;
-        glUniform3f(GetUniformLocation(name) , val.x , val.y , val.z); Y_CHECK_GL_ERROR;
+        glUniform3f(getUniformLocation(name) , val.x , val.y , val.z); Y_CHECK_GL_ERROR;
         return;
     }
 
-    void Shader::SetUniformFloat4(const std::string& name , float val1 , float val2 , float val3 , float val4) {
+    void Shader::setUniformFloat4(const std::string& name , float val1 , float val2 , float val3 , float val4) {
         glUseProgram(programID); Y_CHECK_GL_ERROR;
-        glUniform4f(GetUniformLocation(name) , val1 , val2 , val3 , val4); Y_CHECK_GL_ERROR;
+        glUniform4f(getUniformLocation(name) , val1 , val2 , val3 , val4); Y_CHECK_GL_ERROR;
         return;
     }
 
-    void Shader::SetUniformFloat4(const std::string& name , const glm::vec4& val) {
+    void Shader::setUniformFloat4(const std::string& name , const glm::vec4& val) {
         glUseProgram(programID); Y_CHECK_GL_ERROR;
-        glUniform4f(GetUniformLocation(name) , val.x , val.y , val.z , val.w); Y_CHECK_GL_ERROR;
+        glUniform4f(getUniformLocation(name) , val.x , val.y , val.z , val.w); Y_CHECK_GL_ERROR;
         return;
     }
 
-    void Shader::SetUniformMat3(const std::string& name , const glm::mat3& mat) {
+    void Shader::setUniformMat3(const std::string& name , const glm::mat3& mat) {
         glUseProgram(programID); Y_CHECK_GL_ERROR;
-        glUniformMatrix3fv(GetUniformLocation(name) , 1 , GL_FALSE , glm::value_ptr(mat)); Y_CHECK_GL_ERROR;
+        glUniformMatrix3fv(getUniformLocation(name) , 1 , GL_FALSE , glm::value_ptr(mat)); Y_CHECK_GL_ERROR;
         return;
     }
     
-    void Shader::SetUniformMat4(const std::string& name , const glm::mat4& mat) {
+    void Shader::setUniformMat4(const std::string& name , const glm::mat4& mat) {
         glUseProgram(programID); Y_CHECK_GL_ERROR;
-        glUniformMatrix4fv(GetUniformLocation(name) , 1 , GL_FALSE , glm::value_ptr(mat)); Y_CHECK_GL_ERROR;
+        glUniformMatrix4fv(getUniformLocation(name) , 1 , GL_FALSE , glm::value_ptr(mat)); Y_CHECK_GL_ERROR;
         return;
     }
 

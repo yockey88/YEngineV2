@@ -1,8 +1,8 @@
-#include "Managers/renderManager.hpp"
 #include "engine.hpp"
 #include "log.hpp"
-#include "Graphics/GLErrorHelper.hpp"
+#include "Managers/renderManager.hpp"
 #include "Graphics/framebuffer.hpp"
+#include "Graphics/helper.hpp"
 
 #include "glad/glad.h"
 
@@ -14,12 +14,12 @@ namespace managers {
     void RenderManager::PushFrameBuffer(std::shared_ptr<graphics::Framebuffer> newBuffer) {
 
         Y_ASSERT(newBuffer != nullptr , "FrameBuffer is Null");
-        frameBuffers.push(newBuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER , newBuffer->GetFbo()); Y_CHECK_GL_ERROR;
-        glm::ivec2 bufferSize = newBuffer->GetSize();
-        SetViewport({0 , 0 , newBuffer->GetSize().x , newBuffer->GetSize().y});
+        m_Framebuffers.push(newBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER , newBuffer->getFbo()); Y_CHECK_GL_ERROR;
+        glm::ivec2 bufferSize = newBuffer->getSize();
+        SetViewport({0 , 0 , newBuffer->getSize().x , newBuffer->getSize().y});
 
-        glm::vec4 cc = newBuffer->GetClearColor();
+        glm::vec4 cc = newBuffer->getClearColor();
         glClearColor(cc.r , cc.g , cc.b , cc.a); Y_CHECK_GL_ERROR;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); Y_CHECK_GL_ERROR;
 
@@ -28,22 +28,42 @@ namespace managers {
 
     void RenderManager::PopFrameBuffer() {
 
-        Y_ASSERT(frameBuffers.size() > 0 , "Render Manager::popFrameBuffer() - empty stack");
-        if (frameBuffers.size() > 0) {
-            frameBuffers.pop();
-            if (frameBuffers.size() > 0) {
-                auto nextfb = frameBuffers.top();
-                glBindFramebuffer(GL_FRAMEBUFFER , nextfb->GetFbo()); Y_CHECK_GL_ERROR;
-                SetViewport({0 , 0 , nextfb->GetSize().x , nextfb->GetSize().y});
+        Y_ASSERT(m_Framebuffers.size() > 0 , "Render Manager::popFrameBuffer() - empty stack");
+        if (m_Framebuffers.size() > 0) {
+            m_Framebuffers.pop();
+            if (m_Framebuffers.size() > 0) {
+                auto nextfb = m_Framebuffers.top();
+                glBindFramebuffer(GL_FRAMEBUFFER , nextfb->getFbo()); Y_CHECK_GL_ERROR;
+                SetViewport({0 , 0 , nextfb->getSize().x , nextfb->getSize().y});
             } else {
                 glBindFramebuffer(GL_FRAMEBUFFER , 0); Y_CHECK_GL_ERROR;
                 auto& window = Y_WINDOW;
-                SetViewport({0 , 0 , window.GetSize().x , window.GetSize().y});
+                SetViewport({ 0 , 0 , window.GetSize().x , window.GetSize().y });
             }
         }
         return;
     }
-    
+
+    void RenderManager::PushCamera(std::shared_ptr<graphics::Camera> newCamera) {
+
+        Y_ASSERT(newCamera != nullptr , "Camera is Null");
+        m_Cameras.push(newCamera);
+
+        return;
+    }
+
+    void RenderManager::PopCamera() {
+
+        Y_ASSERT(m_Cameras.size() > 0 , "Render Manager::popCamera() - empty stack");
+        if (m_Cameras.size() > 0) {
+            m_Cameras.pop();
+        }
+
+        return;
+    }
+
+    RenderManager::RenderManager() {}
+
     void RenderManager::Initialize() {
         Y_INFO("[Rendering Device]\n\t\tVendor-> {}\n\t\tRenderer-> {}\n\t\tVersion-> {}" ,
                     (const char*)glGetString(GL_VENDOR) , 
@@ -61,8 +81,8 @@ namespace managers {
     }
 
     void RenderManager::Shutdown() {
-        while (renderCmnds.size() > 0) {
-            renderCmnds.pop();
+        while (m_RenderCmnds.size() > 0) {
+            m_RenderCmnds.pop();
         }
 
         return;
@@ -89,17 +109,17 @@ namespace managers {
         return;
     }
 
-    void RenderManager::Submit(std::unique_ptr<graphics::rendering::RenderCommand> rc) {
-        renderCmnds.push(std::move(rc));
+    void RenderManager::Submit(std::unique_ptr<graphics::rendercommands::RenderCommand> rc) {
+        m_RenderCmnds.push(std::move(rc));
 
         return;
     }
 
     void RenderManager::Flush() {
-        while (renderCmnds.size() > 0) {
-            auto rc = std::move(renderCmnds.front());
+        while (m_RenderCmnds.size() > 0) {
+            auto rc = std::move(m_RenderCmnds.front());
 
-            renderCmnds.pop();
+            m_RenderCmnds.pop();
             rc->Execute();
         }
 
@@ -108,14 +128,14 @@ namespace managers {
 
     void RenderManager::Clear() {
         
-        Y_ASSERT(renderCmnds.size() == 0 , "Render Commands Unexecuted | Commands still in Queue");
-        while (renderCmnds.size() > 0) {
-            renderCmnds.pop();
+        Y_ASSERT(m_RenderCmnds.size() == 0 , "Render Commands Unexecuted | Commands still in Queue");
+        while (m_RenderCmnds.size() > 0) {
+            m_RenderCmnds.pop();
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         return;
     }
-    
+
 }
 }

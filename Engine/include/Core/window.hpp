@@ -1,9 +1,9 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
 
-#include "glm/glm.hpp"
 #include "SDL.h"
 #undef main
+#include "glm/glm.hpp"
 
 #include <string>
 #include <memory>
@@ -21,8 +21,8 @@ namespace graphics {
 namespace core {
 
 	struct WindowProperties {
-		glm::ivec2 pos , size , sizeMin;
 		glm::vec4 cc;
+		glm::ivec2 pos , size , minSize;
 		int flags;
 		float aspectRatio;
 		std::string title;
@@ -31,20 +31,22 @@ namespace core {
 	};
 
 	class Window {
-		WindowProperties winProps;
-		std::shared_ptr<graphics::Framebuffer> frameBuffer;
-		std::shared_ptr<graphics::VertexArray> vertArray;
-		std::shared_ptr<graphics::Shader> shader;
-		SDL_Window* window;
-		SDL_GLContext glContext;
-		glm::vec2 fBufferSize;
+		WindowProperties m_WinProps;
+		std::shared_ptr<graphics::Framebuffer> m_FrameBuffer;
+		std::shared_ptr<graphics::VertexArray> m_VA;
+		std::shared_ptr<graphics::Shader> m_Shader;
+		SDL_Window* m_Window;
+		SDL_GLContext m_GlContext;
+		glm::vec2 m_FBufferSize;
 
-		int scrnH , scrnW;
+		std::string m_VShader , m_FShader;
 
-		bool open , renderingToScrn;
+		glm::ivec2 m_Size;
+
+		bool m_Open , m_RenderToScrn;
 
 		void InitializeScrnRender();
-		void Clear() {}
+		void clear() {}
 		void HandleEvents(SDL_Event &e);
 		void RenderToScreen();
 		void HandleResize(int width , int height);
@@ -53,25 +55,25 @@ namespace core {
 		Window& operator=(const Window&) = delete;
 
 	public:
-		Window() : window(nullptr) , open(false) , renderingToScrn(true) {}
+		Window() : m_Window(nullptr) , m_Open(false) , m_RenderToScrn(true) {}
 		~Window() { Shutdown(); }
 
 		[[nodiscard]] bool Create(const WindowProperties& props);
 
+		inline void SetRenderToScrn(bool render) { m_RenderToScrn = render; }
 		void BeginRender();
 		void FlushEvents();
 		void EndRender();
 
 		void Shutdown();
-
-		inline std::shared_ptr<graphics::Framebuffer> getFrameBuffer() { return frameBuffer; }
-		inline SDL_Window* GetSDLWindow() { return window; }
-		inline SDL_GLContext GetSDL_GLContext() { return glContext; }
+		
+		inline SDL_Window* GetSDLWindow() { return m_Window; }
+		inline SDL_GLContext GetSDL_GLContext() { return m_GlContext; }
+		inline std::shared_ptr<graphics::Framebuffer> GetFrameBuffer() { return m_FrameBuffer; }
 		glm::ivec2 GetSize();
 		glm::ivec2 GetCorrectAspectRatioSize(int w , int h);
-		inline void SetRenderingToScrn(const bool& flag) { renderingToScrn = flag; }
-		inline bool IsOpen() const { return open; }
-		inline bool RenderingToScrn() const { return renderingToScrn; }
+		inline bool IsOpen() const { return m_Open; }
+		inline bool ShouldRenderToScrn() const { return m_RenderToScrn; } 
 	};
 
 }

@@ -3,28 +3,20 @@
 namespace Y {
 namespace core {
 
-    float Timer::Tick() {
-        return 0.f;
+    void Timer::start() {
+        now = std::chrono::steady_clock::now();
     }
 
-    void Timer::Start() {
-        m_StartTime = std::chrono::system_clock::now();
-        m_Running = true;
-    }
+    void Timer::step() {
+        lastTime = now;
+        now = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastTime);
+        deltaTime = (float)elapsed.count();
+        msBuildup += deltaTime;
 
-    void Timer::Stop() {
-        m_EndTime = std::chrono::system_clock::now();
-        m_Running = false;
+        if (msBuildup >= (1000.f / (float)fps))
+            msBuildup = 0;
     }
-    
-    float Timer::MilliSinceStart() {
-        return 0.f;
-    }
-
-    float Timer::SecondsSinceStart() {
-        return 0.f;
-    }
-
 
 }
 }

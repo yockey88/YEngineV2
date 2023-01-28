@@ -1,6 +1,6 @@
-#include "Graphics/framebuffer.hpp"
 #include "log.hpp"
-#include "Graphics/GLErrorHelper.hpp"
+#include "Graphics/framebuffer.hpp"
+#include "Graphics/helper.hpp"
 
 #include "glad/glad.h"
 

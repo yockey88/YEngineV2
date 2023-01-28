@@ -8,23 +8,29 @@
 #include <queue>
 #include <stack>
 
-#define Y_SUBMIT_RENDER_CMND(type , ...) std::move(std::make_unique<Y::graphics::rendering::type>(__VA_ARGS__))
+#define Y_SUBMIT_RENDER_CMND(type , ...) std::move(std::make_unique<Y::graphics::rendercommands::type>(__VA_ARGS__))
 
 namespace Y {
 namespace managers {
 
     class RenderManager {
-        friend class graphics::rendering::PushFramebuffer;
-        friend class graphics::rendering::PopFramebuffer;
+        friend class graphics::rendercommands::PushFramebuffer;
+        friend class graphics::rendercommands::PopFramebuffer;
+        friend class graphics::rendercommands::PushCamera;
+        friend class graphics::rendercommands::PopCamera;
 
-        std::queue<std::unique_ptr<graphics::rendering::RenderCommand>> renderCmnds;
-        std::stack<std::shared_ptr<graphics::Framebuffer>> frameBuffers;
+        std::queue<std::unique_ptr<graphics::rendercommands::RenderCommand>> m_RenderCmnds;
+        std::stack<std::shared_ptr<graphics::Framebuffer>> m_Framebuffers;
+        std::stack<std::shared_ptr<graphics::Camera>> m_Cameras;
 
         void PushFrameBuffer(std::shared_ptr<graphics::Framebuffer> newBuffer);
         void PopFrameBuffer(); 
-
+        void PushCamera(std::shared_ptr<graphics::Camera> newCamera);
+        void PopCamera();
         public:
-            RenderManager() {}
+            RenderManager();
+
+            inline graphics::Camera* GetActiveCamera() const { return ((m_Cameras.size() > 0) ? m_Cameras.top().get() : nullptr); }
 
             void Initialize();
             void Shutdown();
@@ -33,7 +39,7 @@ namespace managers {
             void SetClearColor(const glm::vec4& clearColor);
             void SetWireFrameMode(bool enabled);
 
-            void Submit(std::unique_ptr<graphics::rendering::RenderCommand> rc);
+            void Submit(std::unique_ptr<graphics::rendercommands::RenderCommand> rc);
             
             // executes commands in order they were received
             void Flush();

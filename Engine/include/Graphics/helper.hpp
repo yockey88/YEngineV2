@@ -1,5 +1,5 @@
-#ifndef GL_ERROR_HELPER_HPP
-#define GL_ERROR_HELPER_HPP
+#ifndef HELPER_HPP
+#define HELPER_HPP
 
 #include "log.hpp"
 #include "glad/glad.h"
@@ -8,15 +8,16 @@
 namespace Y {
 namespace graphics {
 
-    void CheckGLError();
+    void checkGLError();
     
 }
 }
 
 #ifndef Y_CONFIG_RELEASE
-#define Y_CHECK_GL_ERROR Y::graphics::CheckGLError(); 
+#define Y_CHECK_GL_ERROR Y::graphics::checkGLError(); 
 #else
 #define Y_CHECK_GL_ERROR (void*)0
 #endif
+
 
 #endif

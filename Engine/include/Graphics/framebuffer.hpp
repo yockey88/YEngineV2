@@ -1,5 +1,5 @@
-#ifndef FRAMEBUFFER_HPP
-#define FRAMEBUFFER_HPP
+#ifndef FRAME_BUFFER_HPP
+#define FRAME_BUFFER_HPP
 
 #include "glm/glm.hpp"
 
@@ -19,12 +19,12 @@ namespace graphics {
             Framebuffer(int width , int height);
             ~Framebuffer();
 
-            inline uint32_t GetFbo() const { return fbo; }
-            inline uint32_t GetTextureID() const { return textureID; }
-            inline uint32_t GetRenderBufferID() const { return renderBufferID; }
-            inline glm::ivec2& GetSize() { return size; }
-            void SetClearColor(const glm::vec4& cc) { clearColor = cc; }
-            inline glm::vec4& GetClearColor() { return clearColor; } 
+            inline uint32_t getFbo() const { return fbo; }
+            inline uint32_t getTextureID() const { return textureID; }
+            inline uint32_t getRenderBufferID() const { return renderBufferID; }
+            inline glm::ivec2& getSize() { return size; }
+            void setClearColor(const glm::vec4& cc) { clearColor = cc; }
+            inline glm::vec4& getClearColor() { return clearColor; } 
     };
 
 }

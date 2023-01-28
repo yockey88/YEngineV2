@@ -2,27 +2,27 @@
 #define TIMER_HPP
 
 #include <chrono>
-#include <ctime>
-#include <cmath>
 
 namespace Y {
 namespace core {
 
     class Timer {
-        std::chrono::time_point<std::chrono::system_clock> m_StartTime , m_EndTime;
-        std::chrono::time_point<std::chrono::system_clock> m_LastTick , m_Now;
-        std::chrono::duration<float> m_DeltaTime;
-        bool m_Running;
+        std::chrono::time_point<std::chrono::steady_clock> startTime , now , lastTime;
+        int fps;
+        float deltaTime;
+        float msBuildup;
+
+
         public:
-            Timer() : m_Running(false) {}
-            ~Timer() {}
+            Timer() : deltaTime(0.f) , fps(60) {}
 
-            float Tick();
-            void Start();
-            void Stop();
+            void start();
 
-            float MilliSinceStart();
-            float SecondsSinceStart();
+            void step();
+
+            inline void setFPS(const int& fps) { this->fps = fps; }
+            inline float getDelta() const { return deltaTime; }
+            inline float getBuildup() const { return msBuildup; }
     };
 
 }

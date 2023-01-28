@@ -48,7 +48,7 @@ namespace Y {
 		m_Renderer.Shutdown();
 		m_Window.Shutdown();
 		m_Log.Shutdown();
-		m_Clock.Stop();
+		// m_Clock.Stop();
 
 		m_Initialized = false;
 
@@ -83,7 +83,7 @@ namespace Y {
 	}
 
 	bool Engine::Run(App* app) {
-		m_Clock.Start();
+		// m_Clock.Start();
 		m_Log.Initialize();
 		
 		Y_ASSERT((app != nullptr) , "Attempting to Run an Invalid App");

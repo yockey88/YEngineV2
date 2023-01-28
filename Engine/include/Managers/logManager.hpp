@@ -3,28 +3,36 @@
 
 #include "log.hpp"
 
+#include <queue>
+#include <string>
+#include <fstream>
 #include <memory>
 
 namespace Y {
+
 namespace managers {
 
     class LogManager {
-        std::shared_ptr<spdlog::logger> ConsoleLogger;
-        std::shared_ptr<spdlog::logger> ErrorLogger;
-        bool open;
+        std::shared_ptr<spdlog::logger> m_ConsoleLogger;
+        std::shared_ptr<spdlog::logger> m_ErrorLogger;
+        bool m_Open;
 
+        // Delete Copy Constructors
         LogManager (const LogManager&) = delete;
         LogManager &operator=(const LogManager&) = delete;
-
         public:
-            LogManager() : open(false) {}
+            LogManager() {}
             ~LogManager() { Shutdown(); }
 
             void Initialize();
+
             void Shutdown();
+
+            inline bool isOpen() { return m_Open; }
     };
 
-}
-}
+} // End of Managers
 
-#endif
+} // End of Y
+
+#endif /* logManager.hpp */

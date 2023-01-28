@@ -40,22 +40,22 @@ namespace graphics {
             RawVertexBuffer();
             virtual ~RawVertexBuffer();
 
-            void SetLayout(const std::vector<uint32_t>& layout);
+            void setLayout(const std::vector<uint32_t>& layout);
 
-            virtual uint32_t GetTypeSize() const = 0;
+            virtual uint32_t getTypeSize() const = 0;
 
-            virtual void Upload(bool dynamic);
+            virtual void upload(bool dynamic);
 
-            void Bind();
-            void Unbind();
+            void bind();
+            void unbind();
 
-            inline uint32_t GetID() const             { return vbo; }
-            inline uint32_t GetVertCount() const      { return vertCount; }
-            inline uint32_t GetStride() const         { return stride; }
-            inline uint32_t GetSize() const           { return size; }
-            inline uint32_t GetGLType() const         { return GLType; }
-            inline bool IsUploaded() const            { return uploaded; }
-            inline std::vector<uint32_t>& GetLayout() { return layout; }
+            inline uint32_t getID() const             { return vbo; }
+            inline uint32_t getVertCount() const      { return vertCount; }
+            inline uint32_t getStride() const         { return stride; }
+            inline uint32_t getSize() const           { return size; }
+            inline uint32_t getGLType() const         { return GLType; }
+            inline bool isUploaded() const            { return uploaded; }
+            inline std::vector<uint32_t>& getLayout() { return layout; }
     };
 
     template <typename T>
@@ -81,9 +81,9 @@ namespace graphics {
             }
             ~VertexBuffer() {}
 
-            inline uint32_t GetTypeSize() const override { return sizeof(T); }
+            inline uint32_t getTypeSize() const override { return sizeof(T); }
 
-            void PushVertex(const std::vector<T>& vert) {
+            void pushVertex(const std::vector<T>& vert) {
 
                 uint32_t receivedVals = (uint32_t)vert.size();
 
@@ -101,7 +101,7 @@ namespace graphics {
                 return;
             } 
 
-            void Upload(bool dynamic = false) override {
+            void upload(bool dynamic = false) override {
                 
                 stride *= sizeof(T);
                 size = sizeof(T) * (uint32_t)dataVec.size();
@@ -109,7 +109,7 @@ namespace graphics {
                 Y_ASSERT(size > 0 , "Attempting to Upload Empty Vertex");
 
                 data = &dataVec[0];
-                RawVertexBuffer::Upload(dynamic);
+                RawVertexBuffer::upload(dynamic);
 
                 return;
             }
@@ -121,30 +121,31 @@ namespace graphics {
         uint32_t attribCount;
         bool valid;
         std::vector<std::unique_ptr<RawVertexBuffer>> vbos;
-        std::string name;
+        std::string name , path;
         public:
             VertexArray();
             ~VertexArray();
 
-            inline uint32_t GetVertCount() const { return vertCount; }
-            inline uint32_t GetEltCount() const  { return eltCount; }
-            inline bool IsValid() const          { return valid; }
+            inline uint32_t getVertCount() const { return vertCount; }
+            inline uint32_t getEltCount() const  { return eltCount; }
+            inline bool isValid() const          { return valid; }
 
-            void PushBuffer(std::unique_ptr<RawVertexBuffer> vbo);
-            void SetElements(const std::vector<uint32_t>& elements);
+            void pushBuffer(std::unique_ptr<RawVertexBuffer> vbo);
+            void setElements(const std::vector<uint32_t>& elements);
 
-            void Upload();
+            void upload();
 
-            void Bind();
-            void Unbind();
+            void bind();
+            void unbind();
 
-            inline std::string GetName() const { return name; }
-            inline void SetName(const std::string& name) { this->name = name; }
+            inline std::string getName() const { return name; }
+            inline void setName(const std::string& name) { this->name = name; }
+            inline std::string getPath() const { return path; }
+            inline void setPath(const std::string& path) { this->path = path; }
 
     };
 
-}
+} 
 }
 
 #endif
-

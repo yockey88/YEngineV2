@@ -1,3 +1,4 @@
+
 #include "Managers/logManager.hpp"
 
 namespace Y {
@@ -10,18 +11,18 @@ namespace managers {
         consoleSink->set_pattern("[ %v ] | [%D %H:%M:%S.%e %Y]");
 
         std::vector<spdlog::sink_ptr> sinks1{ consoleSink };
-        ConsoleLogger = std::make_shared<spdlog::logger>(CONSOLE_LOGGER_NAME , sinks1.begin() , sinks1.end());
-        ConsoleLogger->set_level(spdlog::level::trace);
-        ConsoleLogger->flush_on(spdlog::level::trace);
-        spdlog::register_logger(ConsoleLogger);
+        m_ConsoleLogger = std::make_shared<spdlog::logger>(Y_CONSOLE_LOGGER_NAME , sinks1.begin() , sinks1.end());
+        m_ConsoleLogger->set_level(spdlog::level::trace);
+        m_ConsoleLogger->flush_on(spdlog::level::trace);
+        spdlog::register_logger(m_ConsoleLogger);
 
         std::vector<spdlog::sink_ptr> sinks2 { errSink };
-        ErrorLogger = std::make_shared<spdlog::logger>(ERROR_LOGGER_NAME , sinks2.begin() , sinks2.end());
-        ErrorLogger->set_level(spdlog::level::warn);
-        ErrorLogger->flush_on(spdlog::level::warn);
-        spdlog::register_logger(ErrorLogger);
+        m_ErrorLogger = std::make_shared<spdlog::logger>(Y_ERROR_LOGGER_NAME , sinks2.begin() , sinks2.end());
+        m_ErrorLogger->set_level(spdlog::level::warn);
+        m_ErrorLogger->flush_on(spdlog::level::warn);
+        spdlog::register_logger(m_ErrorLogger);
 
-        open = true;
+        m_Open = true;
     }
 
     void LogManager::Shutdown() {

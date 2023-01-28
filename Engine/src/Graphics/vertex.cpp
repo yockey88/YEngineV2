@@ -1,5 +1,5 @@
 #include "Graphics/vertex.hpp"
-#include "Graphics/GLErrorHelper.hpp"
+#include "Graphics/helper.hpp"
 
 namespace Y {
 namespace graphics {
@@ -21,18 +21,19 @@ namespace graphics {
         glDeleteBuffers(1 , &vbo); Y_CHECK_GL_ERROR;
     }
 
-    void RawVertexBuffer::SetLayout(const std::vector<uint32_t>& layout) {
+    void RawVertexBuffer::setLayout(const std::vector<uint32_t>& layout) {
         
         this->layout = layout;
         stride = 0;
+
         for (auto& count : layout)
             stride += count;
 
         return;
     }
 
-    void RawVertexBuffer::Upload(bool dynamic = false) {
-Y_CHECK_GL_ERROR
+    void RawVertexBuffer::upload(bool dynamic = false) {
+        
         glBindBuffer(GL_ARRAY_BUFFER, vbo); Y_CHECK_GL_ERROR;
         glBufferData(GL_ARRAY_BUFFER , size , data , (dynamic) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW); Y_CHECK_GL_ERROR;
         glBindBuffer(GL_ARRAY_BUFFER , 0);
@@ -41,14 +42,14 @@ Y_CHECK_GL_ERROR
         return;
     }
 
-    void RawVertexBuffer::Bind() {
+    void RawVertexBuffer::bind() {
 
         glBindBuffer(GL_ARRAY_BUFFER , vbo);
 
         return;
     }
 
-    void RawVertexBuffer::Unbind() {
+    void RawVertexBuffer::unbind() {
 
         glBindBuffer(GL_ARRAY_BUFFER , 0);
 
@@ -60,25 +61,25 @@ Y_CHECK_GL_ERROR
     }
 
     VertexArray::~VertexArray() {
-        vbos.clear();
+         vbos.clear();
         glDeleteVertexArrays(1 , &vao); Y_CHECK_GL_ERROR;
     }
 
-    void VertexArray::PushBuffer(std::unique_ptr<RawVertexBuffer> vbo) {
+    void VertexArray::pushBuffer(std::unique_ptr<RawVertexBuffer> vbo) {
 
         if (vbos.size() > 0)
-            Y_ASSERT(vbos[0]->GetVertCount() == vbo->GetVertCount() , "Attempting to Push a Vertex Buffer with an Incorrect Number of Elements");
+            Y_ASSERT(vbos[0]->getVertCount() == vbo->getVertCount() , "Attempting to Push a Vertex Buffer with an Incorrect Number of Elements");
 
-        Y_ASSERT(vbo->GetLayout().size() > 0, "Vertex Buffer Layout is Undefined");
-        if (vbo->GetLayout().size() > 0) {
+        Y_ASSERT(vbo->getLayout().size() > 0, "Vertex Buffer Layout is Undefined");
+        if (vbo->getLayout().size() > 0) {
 			vbos.push_back(std::move(vbo));
-			vertCount = (uint32_t)vbos[0]->GetVertCount();
+			vertCount = (uint32_t)vbos[0]->getVertCount();
 		}
 
         return;
     }
 
-    void VertexArray::SetElements(const std::vector<uint32_t>& elements) {
+    void VertexArray::setElements(const std::vector<uint32_t>& elements) {
 
         eltCount = (uint32_t)elements.size();
 		glBindVertexArray(vao); Y_CHECK_GL_ERROR;
@@ -90,38 +91,39 @@ Y_CHECK_GL_ERROR
         return;
     }
 
-    void VertexArray::Upload() {
+    void VertexArray::upload() {
 
-        Bind();
+        bind();
 		uint32_t attributeCount = 0;
 		for (auto& vbo : vbos) {
-			if (!vbo->IsUploaded())
-				vbo->Upload(false);
+			if (!vbo->isUploaded())
+				vbo->upload(false);
 
-			vbo->Bind();
+			vbo->bind();
 			uint32_t offset = 0;
-			for (uint32_t count : vbo->GetLayout()) {Y_CHECK_GL_ERROR;
-				glVertexAttribPointer(attributeCount , count , static_cast<GLenum>(vbo->GetGLType()) , GL_FALSE , vbo->GetStride() , (void*)(intptr_t)offset); Y_CHECK_GL_ERROR;
+			for (uint32_t count : vbo->getLayout()) {
+				glEnableVertexAttribArray(attributeCount); Y_CHECK_GL_ERROR;
+				glVertexAttribPointer(attributeCount , count , static_cast<GLenum>(vbo->getGLType()) , GL_FALSE , vbo->getStride() , (void*)(intptr_t)offset); Y_CHECK_GL_ERROR;
 
 				attributeCount++;
-				offset += (count * vbo->GetTypeSize());
+				offset += (count * vbo->getTypeSize());
 			}
-			vbo->Unbind();
+			vbo->unbind();
 		}
-		Unbind();
+		unbind();
 		valid = true;
 
         return;
     }
 
-    void VertexArray::Bind() {
+    void VertexArray::bind() {
 
         glBindVertexArray(vao); Y_CHECK_GL_ERROR;
 
         return;
     }
 
-    void VertexArray::Unbind() {
+    void VertexArray::unbind() {
 
         glBindVertexArray(0); Y_CHECK_GL_ERROR;
 

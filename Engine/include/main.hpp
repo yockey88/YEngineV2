@@ -7,9 +7,7 @@
 Y::App* CreateApp();
 
 int main() {
-    if (!EngineY.Run(CreateApp())) {
-        return 1;
-    }
+    Y::Engine::Instance().Run(CreateApp());
     return 0;
 }
 
