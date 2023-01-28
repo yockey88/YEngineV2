@@ -10,6 +10,13 @@
 #include <string>
 
 namespace Y {
+
+    /*
+        - Application Config
+            - Window Props
+            - <?> Load Paths </?>
+    */
+   
     class App {
         public:
             virtual ~App() {}

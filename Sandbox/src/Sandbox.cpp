@@ -17,9 +17,10 @@ class Sandbox : public App {
 	std::shared_ptr<graphics::Material> material;
 
 	glm::vec3 camPos{ 0.f , 0.f , 5.f };
-	glm::vec3 pos{ 0.f , 0.f , 1.f } , size{ 1.f , 1.f , 0.f };
 	float camRot = 0.f;
 
+	glm::vec3 pos{ 0.f , 0.f , 1.f } , size{ 1.f , 1.f , 0.f };
+	
 	public:
 		Sandbox() {}
 		Sandbox(const Sandbox&) = delete;
