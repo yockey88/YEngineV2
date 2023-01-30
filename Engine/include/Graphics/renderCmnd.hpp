@@ -8,7 +8,8 @@
 namespace Y {
 namespace graphics {
 
-    class Camera;
+    class OrthoCamera;
+    class PerspectiveCamera;
     class VertexArray;
     class Shader;
     class Texture;
@@ -23,64 +24,97 @@ namespace rendercommands {
             virtual void Execute() = 0;
     };
 
+    class RenderPoint : public RenderCommand {
+        std::shared_ptr<VertexArray> vertArray;
+        std::shared_ptr<Shader> shader;
+        float size;
+        public:
+            RenderPoint(std::shared_ptr<VertexArray> vertArray , std::shared_ptr<Shader> shader , const float& size) 
+                : vertArray(vertArray) , shader(shader) , size(size) {}
+            virtual void Execute() override;
+    };
+
+    class RenderLine : public RenderCommand {
+        std::shared_ptr<VertexArray> vertArray;
+        std::shared_ptr<Shader> shader;
+        float width;
+        public:
+            RenderLine(std::shared_ptr<VertexArray> vertArray , std::shared_ptr<Shader> shader ,  const float& width) 
+                : vertArray(vertArray) , shader(shader) , width(width) {}
+            virtual void Execute() override;
+    };
+
     class RenderVertexArray : public RenderCommand {
-        std::weak_ptr<VertexArray> vertArray;
-        std::weak_ptr<Shader> shader;
+        std::shared_ptr<VertexArray> vertArray;
+        std::shared_ptr<Shader> shader;
         glm::mat4 modelMatrix;
         public:
-            RenderVertexArray(std::weak_ptr<VertexArray> vertArray, std::weak_ptr<Shader> shader , const glm::mat4& modelMat = glm::mat4(1.f)) 
+            RenderVertexArray(std::shared_ptr<VertexArray> vertArray , std::shared_ptr<Shader> shader , const glm::mat4& modelMat = glm::mat4(1.f)) 
                 : vertArray(vertArray) , shader(shader) , modelMatrix(modelMat) {}
 
             virtual void Execute() override;
     };
 
     class RenderTexturedVertexArray : public RenderCommand {
-        std::weak_ptr<VertexArray> vertArray;
-        std::weak_ptr<Shader> shader;
-        std::weak_ptr<Texture> texture;
+        std::shared_ptr<VertexArray> vertArray;
+        std::shared_ptr<Shader> shader;
+        std::shared_ptr<Texture> texture;
         glm::mat4 modelMatrix;
         public:
-            RenderTexturedVertexArray(std::weak_ptr<VertexArray> vertArray , std::weak_ptr<Shader> shader , std::weak_ptr<Texture> texture , const glm::mat4& modelMat = glm::mat4(1.f))
+            RenderTexturedVertexArray(std::shared_ptr<VertexArray> vertArray , std::shared_ptr<Shader> shader , std::shared_ptr<Texture> texture , const glm::mat4& modelMat = glm::mat4(1.f))
                 : vertArray(vertArray) , shader(shader) , texture(texture) , modelMatrix(modelMat) {}
 
             virtual void Execute() override;
     };
 
     class RenderVertexArrayMaterial : public RenderCommand {
-        std::weak_ptr<VertexArray> vertArray;
-        std::weak_ptr<Material> material;
+        std::shared_ptr<VertexArray> vertArray;
+        std::shared_ptr<Material> material;
         glm::mat4 modelMatrix;
         public:
-            RenderVertexArrayMaterial(std::weak_ptr<VertexArray> vertArray , std::weak_ptr<Material> material , const glm::mat4& modelMat = glm::mat4(1.f))
+            RenderVertexArrayMaterial(std::shared_ptr<VertexArray> vertArray , std::shared_ptr<Material> material , const glm::mat4& modelMat = glm::mat4(1.f))
                 : vertArray(vertArray) , material(material) , modelMatrix(modelMat) {}
 
             virtual void Execute() override;
     };
 
-    class PushFramebuffer: public RenderCommand {
-        std::weak_ptr<Framebuffer> fBuffer;
+    class PushFramebuffer : public RenderCommand {
+        std::shared_ptr<Framebuffer> fBuffer;
         public:
-            PushFramebuffer(std::weak_ptr<Framebuffer> buffer)
+            PushFramebuffer(std::shared_ptr<Framebuffer> buffer)
                 : fBuffer(buffer) {}
             virtual void Execute() override;
     };
 
-    class PopFramebuffer: public RenderCommand {
+    class PopFramebuffer : public RenderCommand {
         public:
             PopFramebuffer() {}
             virtual void Execute() override;
     };
 
-    class PushCamera: public RenderCommand {
-        std::weak_ptr<Camera> camera;
+    class PushOrthoCamera : public RenderCommand {
+        std::shared_ptr<OrthoCamera> camera;
         public:
-            PushCamera(std::weak_ptr<Camera> camera) : camera(camera) {}
+            PushOrthoCamera(std::shared_ptr<OrthoCamera> camera) : camera(camera) {}
             virtual void Execute() override;
     };
 
-    class PopCamera: public RenderCommand {
+    class PopOrthoCamera : public RenderCommand {
         public:
-            PopCamera() {}
+            PopOrthoCamera() {}
+            virtual void Execute() override;
+    };
+
+    class PushPerspectiveCamera : public RenderCommand {
+        std::shared_ptr<PerspectiveCamera> camera;
+        public:
+            PushPerspectiveCamera(std::shared_ptr<PerspectiveCamera> camera) : camera(camera) {}
+            virtual void Execute() override;
+    };
+
+    class PopPerspectiveCamera : public RenderCommand {
+        public:
+            PopPerspectiveCamera() {}
             virtual void Execute() override;
     };
 

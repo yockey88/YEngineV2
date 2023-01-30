@@ -1,7 +1,8 @@
 #include "engine.hpp"
 #include "log.hpp"
 #include "Graphics/renderCmnd.hpp"
-#include "Graphics/camera.hpp"
+#include "Graphics/orthoCamera.hpp"
+#include "Graphics/perspectiveCamera.hpp"
 #include "Graphics/vertex.hpp"
 #include "Graphics/shader.hpp"
 #include "Graphics/texture.hpp"
@@ -15,32 +16,90 @@ namespace Y {
 namespace graphics {
 namespace rendercommands {
 
-    void RenderVertexArray::Execute() {
-        std::shared_ptr<VertexArray> exVertArray = vertArray.lock();
-        std::shared_ptr<Shader> exShader = shader.lock();
+    void RenderPoint::Execute() {
 
-        Y_ASSERT(exVertArray->isValid() , "Attemtping to Execute Invalid Vertex Array");
-        if (exVertArray && exShader) {
-            exVertArray->bind();
-            exShader->bind();
+        Y_ASSERT(vertArray->IsValid() , "Attemtping to Execute Invalid Vertex Array");
+        if (vertArray && shader) {
+            vertArray->Bind();
+            shader->Bind();
 
             // ToDo -> convert camera to leverage UBOs
-            const auto& cam = Y_RENDERER.GetActiveCamera();
+            const auto& cam = Y_RENDERER.GetActivePerspectiveCamera();
             if (cam) {
-                exShader->setUniformMat4("proj" , cam->getOrthoProjMatrix());
-                exShader->setUniformMat4("view" , cam->getViewMatrix());
+                shader->SetUniformMat4("proj" , cam->GetProjMatrix());
+                shader->SetUniformMat4("view" , cam->GetViewMatrix());
             }
 
-            exShader->setUniformMat4("model" , modelMatrix);
-
-            if (exVertArray->getEltCount() > 0) {
-                glDrawElements(GL_TRIANGLES , exVertArray->getEltCount() , GL_UNSIGNED_INT , 0);
+            if (vertArray->GetEltCount() > 0) {
+                glDrawElements(GL_POINTS , vertArray->GetEltCount() , GL_UNSIGNED_INT , 0);
             } else {
-                glDrawArrays(GL_TRIANGLE_STRIP , 0 , exVertArray->getVertCount());
+                glPointSize((GLfloat)size);
+                glDrawArrays(GL_POINTS , 0 , vertArray->GetVertCount());
             }
 
-            exShader->unbind();
-            exVertArray->unbind();
+            shader->Unbind();
+            vertArray->Unbind();
+        } else {
+            Y_WARN("Attempting to Render an Invalid Vertex Array");
+        }
+
+        return;
+    }
+
+    void RenderLine::Execute() {
+
+        Y_ASSERT(vertArray->IsValid() , "Attemtping to Execute Invalid Vertex Array");
+        if (vertArray && shader) {
+            vertArray->Bind();
+            shader->Bind();
+
+            // ToDo -> convert camera to leverage UBOs
+            const auto& cam = Y_RENDERER.GetActivePerspectiveCamera();
+            if (cam) {
+                shader->SetUniformMat4("proj" , cam->GetProjMatrix());
+                shader->SetUniformMat4("view" , cam->GetViewMatrix());
+            }
+
+            if (vertArray->GetEltCount() > 0) {
+                glDrawElements(GL_LINES , vertArray->GetEltCount() , GL_UNSIGNED_INT , 0);
+            } else {
+                glLineWidth((GLfloat)width);
+                glDrawArrays(GL_LINES , 0 , vertArray->GetVertCount());
+            }
+
+            shader->Unbind();
+            vertArray->Unbind();
+        } else {
+            Y_WARN("Attempting to Render an Invalid Vertex Array");
+        }
+
+        return;
+    }
+
+    void RenderVertexArray::Execute() {
+
+        Y_ASSERT(vertArray->IsValid() , "Attemtping to Execute Invalid Vertex Array");
+        if (vertArray && shader) {
+            vertArray->Bind();
+            shader->Bind();
+
+            // ToDo -> convert camera to leverage UBOs
+            const auto& cam = Y_RENDERER.GetActivePerspectiveCamera();
+            if (cam) {
+                shader->SetUniformMat4("proj" , cam->GetProjMatrix());
+                shader->SetUniformMat4("view" , cam->GetViewMatrix());
+            }
+
+            shader->SetUniformMat4("model" , modelMatrix);
+
+            if (vertArray->GetEltCount() > 0) {
+                glDrawElements(GL_TRIANGLES , vertArray->GetEltCount() , GL_UNSIGNED_INT , 0);
+            } else {
+                glDrawArrays(GL_TRIANGLE_STRIP , 0 , vertArray->GetVertCount());
+            }
+
+            shader->Unbind();
+            vertArray->Unbind();
         } else {
             Y_WARN("Attempting to Render an Invalid Vertex Array");
         }
@@ -49,34 +108,31 @@ namespace rendercommands {
     }
 
     void RenderTexturedVertexArray::Execute() {
-        std::shared_ptr<VertexArray> exVertArray = vertArray.lock();
-        std::shared_ptr<Shader> exShader = shader.lock();
-        std::shared_ptr<Texture> exText = texture.lock();
 
-        Y_ASSERT(exVertArray->isValid() , "Attempting Render Invalid Texture Vertex Array | Did you call VertexArray::Upload()?");
-        if (exVertArray && exText && exShader) {
-            exVertArray->bind();
-            exText->bind();
-            exShader->bind();
+        Y_ASSERT(vertArray->IsValid() , "Attempting Render Invalid Texture Vertex Array | Did you call VertexArray::Upload()?");
+        if (vertArray && texture && shader) {
+            vertArray->Bind();
+            texture->bind();
+            shader->Bind();
 
             // ToDo -> convert camera to leverage UBOs
-            const auto& cam = Y_RENDERER.GetActiveCamera();
+            const auto& cam = Y_RENDERER.GetActivePerspectiveCamera();
             if (cam) {
-                exShader->setUniformMat4("proj" , cam->getOrthoProjMatrix());
-                exShader->setUniformMat4("view" , cam->getViewMatrix());
+                shader->SetUniformMat4("proj" , cam->GetProjMatrix());
+                shader->SetUniformMat4("view" , cam->GetViewMatrix());
             }
 
-            exShader->setUniformMat4("model" , modelMatrix);
+            shader->SetUniformMat4("model" , modelMatrix);
 
-            if (exVertArray->getEltCount() > 0) {
-                glDrawElements(GL_TRIANGLES , exVertArray->getEltCount() , GL_UNSIGNED_INT , 0);
+            if (vertArray->GetEltCount() > 0) {
+                glDrawElements(GL_TRIANGLES , vertArray->GetEltCount() , GL_UNSIGNED_INT , 0);
             } else {
-                glDrawArrays(GL_TRIANGLE_STRIP , 0 , exVertArray->getVertCount());
+                glDrawArrays(GL_TRIANGLE_STRIP , 0 , vertArray->GetVertCount());
             }
 
-            exShader->unbind();
-            exText->unbind();
-            exVertArray->unbind();
+            shader->Unbind();
+            texture->unbind();
+            vertArray->Unbind();
         } else {
             Y_WARN("Attempting to Render a Texture Vertex Array that has Invalid Data");
         }
@@ -87,43 +143,40 @@ namespace rendercommands {
 
     void RenderVertexArrayMaterial::Execute() {
 
-        std::shared_ptr<VertexArray> exVertArray = vertArray.lock();
-        std::shared_ptr<Material> exMaterial = material.lock();
+        Y_ASSERT(vertArray->IsValid() , "Attempting Render Invalid Texture Vertex Array | Did you call VertexArray::Upload()?");
+        if (vertArray && material) {
+            vertArray->Bind();
 
-        Y_ASSERT(exVertArray->isValid() , "Attempting Render Invalid Texture Vertex Array | Did you call VertexArray::Upload()?");
-        if (exVertArray && exMaterial) {
-            exVertArray->bind();
-
-            std::shared_ptr<Shader> exShader= exMaterial->getShader();
-            std::shared_ptr<Texture> exTexture = exMaterial->getTexture();
+            std::shared_ptr<Shader> exShader= material->getShader();
+            std::shared_ptr<Texture> exTexture = material->getTexture();
             Y_ASSERT(exShader != nullptr , "Attempting to Execute invalid RenderVertexArrayMaterial - shader is null");
 
             if (exShader != nullptr) {
-                exMaterial->updateShaderUniforms();
-                exShader->bind();
+                material->updateShaderUniforms();
+                exShader->Bind();
                 if (exTexture) 
                     exTexture->bind();
 
                 // ToDo -> convert camera to leverage UBOs
-                const auto& cam = Y_RENDERER.GetActiveCamera();
+                const auto& cam = Y_RENDERER.GetActivePerspectiveCamera();
                 if (cam) {
-                    exShader->setUniformMat4("proj" , cam->getOrthoProjMatrix()); 
-                    exShader->setUniformMat4("view" , cam->getViewMatrix());
+                    exShader->SetUniformMat4("proj" , cam->GetProjMatrix()); 
+                    exShader->SetUniformMat4("view" , cam->GetViewMatrix());
                 }
-                exShader->setUniformMat4("model" , modelMatrix);
+                exShader->SetUniformMat4("model" , modelMatrix);
 
-                if (exVertArray->getEltCount() > 0) {
-                    glDrawElements(GL_TRIANGLES , exVertArray->getEltCount() , GL_UNSIGNED_INT , 0);
+                if (vertArray->GetEltCount() > 0) {
+                    glDrawElements(GL_TRIANGLES , vertArray->GetEltCount() , GL_UNSIGNED_INT , 0);
                 } else {
-                    glDrawArrays(GL_TRIANGLE_STRIP , 0 , exVertArray->getVertCount());
+                    glDrawArrays(GL_TRIANGLE_STRIP , 0 , vertArray->GetVertCount());
                 }
                 
                 if (exTexture != nullptr) 
                     exTexture->unbind();
-                exShader->unbind();
+                exShader->Unbind();
             }
 
-            exVertArray->unbind();
+            vertArray->Unbind();
 
         } else {
             Y_WARN("Attempting to Render a Texture Vertex Array that has Invalid Data");
@@ -135,11 +188,11 @@ namespace rendercommands {
     }
 
     void PushFramebuffer::Execute() {
-        std::shared_ptr<Framebuffer> fb = fBuffer.lock();
-        if (fb) {
-            Y_RENDERER.PushFrameBuffer(fb);
+        
+        if (fBuffer) {
+            Y_RENDERER.PushFrameBuffer(fBuffer);
         } else {
-            Y_WARN("Attempting to execute PushFrameBuffer with invalid data");
+            Y_WARN("Attempting to execute Push FrameBuffer with invalid data");
         }
         return;
     }
@@ -149,21 +202,35 @@ namespace rendercommands {
         return;
     }
 
-    void PushCamera::Execute() {
-        std::shared_ptr<Camera> c = camera.lock();
-        if (c) {
-            Y_RENDERER.PushCamera(c);
+    void PushOrthoCamera::Execute() {
+        
+        if (camera) {
+            Y_RENDERER.PushOrthoCamera(camera);
         } else {
-            Y_WARN("Attempting to execute PushFrameBuffer with invalid data");
+            Y_WARN("Attempting to execute Push Orthographic Camera with invalid data");
         }
         return;
     }
 
-    void PopCamera::Execute() {
-        Y_RENDERER.PopCamera();
+    void PopOrthoCamera::Execute() {
+        Y_RENDERER.PopOrthoCamera();
         return;
     }
 
+    void PushPerspectiveCamera::Execute() {
+        
+        if (camera) {
+            Y_RENDERER.PushPerspectiveCamera(camera);
+        } else {
+            Y_WARN("Attempting to execute Push Perspective Camera with invalid data");
+        }
+        return;
+    }
+
+    void PopPerspectiveCamera::Execute() {
+        Y_RENDERER.PopPerspectiveCamera();
+        return;
+    }
 }
 }
 }

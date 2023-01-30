@@ -16,11 +16,17 @@ namespace Y {
             - Window Props
             - <?> Load Paths </?>
     */
-   
+    struct EngineConfig {
+        bool windowed;
+        std::string name;
+
+        EngineConfig() : windowed(true) , name("[Default Application]") {}
+    }; 
+
     class App {
         public:
             virtual ~App() {}
-
+            
             virtual core::WindowProperties GetWindowProperties() { return core::WindowProperties(); }
             
             virtual void Initialize() {}

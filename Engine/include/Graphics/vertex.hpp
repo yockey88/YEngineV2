@@ -18,44 +18,44 @@ namespace graphics {
 
     class RawVertexBuffer {
         protected:
-            uint32_t vbo = 0;
-            uint32_t vertCount = 0;
-            uint32_t stride = 0;
-            uint32_t GLType = 0;
-            uint32_t size = 0;
-            std::vector<uint32_t> layout;
-            void* data = nullptr;
+            uint32_t m_Vbo = 0;
+            uint32_t m_VertCount = 0;
+            uint32_t m_Stride = 0;
+            uint32_t m_GLType = 0;
+            uint32_t m_Size = 0;
+            std::vector<uint32_t> m_Layout;
+            void* m_Data = nullptr;
 
-            bool uploaded = false;
+            bool m_Uploaded = false;
         public:
-            static const uint32_t GLTypeByte;
-            static const uint32_t GLTypeUByte;
-            static const uint32_t GLTypeShort;
-            static const uint32_t GLTypeUShort;
-            static const uint32_t GLTypeInt;
-            static const uint32_t GLTypeUInt;
-            static const uint32_t GLTypeFloat;
-            static const uint32_t GLTypeDouble;
+            static const uint32_t m_GLTypeByte;
+            static const uint32_t m_GLTypeUByte;
+            static const uint32_t m_GLTypeShort;
+            static const uint32_t m_GLTypeUShort;
+            static const uint32_t m_GLTypeInt;
+            static const uint32_t m_GLTypeUInt;
+            static const uint32_t m_GLTypeFloat;
+            static const uint32_t m_GLTypeDouble;
 
             RawVertexBuffer();
             virtual ~RawVertexBuffer();
 
-            void setLayout(const std::vector<uint32_t>& layout);
+            void SetLayout(const std::vector<uint32_t>& layout);
 
-            virtual uint32_t getTypeSize() const = 0;
+            virtual uint32_t GetTypeSize() const = 0;
 
-            virtual void upload(bool dynamic);
+            virtual void Upload(bool dynamic);
 
-            void bind();
-            void unbind();
+            void Bind();
+            void Unbind();
 
-            inline uint32_t getID() const             { return vbo; }
-            inline uint32_t getVertCount() const      { return vertCount; }
-            inline uint32_t getStride() const         { return stride; }
-            inline uint32_t getSize() const           { return size; }
-            inline uint32_t getGLType() const         { return GLType; }
-            inline bool isUploaded() const            { return uploaded; }
-            inline std::vector<uint32_t>& getLayout() { return layout; }
+            inline uint32_t GetID() const             { return m_Vbo; }
+            inline uint32_t GetVertCount() const      { return m_VertCount; }
+            inline uint32_t GetStride() const         { return m_Stride; }
+            inline uint32_t GetSize() const           { return m_Size; }
+            inline uint32_t GetGLType() const         { return m_GLType; }
+            inline bool IsUploaded() const            { return m_Uploaded; }
+            inline std::vector<uint32_t>& GetLayout() { return m_Layout; }
     };
 
     template <typename T>
@@ -66,82 +66,82 @@ namespace graphics {
                       std::is_same<T , float>() || std::is_same<T , double>() , 
                       "Vertex data type not suppored");
 
-        uint32_t valueCount;
-        std::vector<T> dataVec;
+        uint32_t m_ValueCount;
+        std::vector<T> m_DataVec;
         public:
-            VertexBuffer() : valueCount(0) {
-                if constexpr (std::is_same<T , char>())           { GLType = RawVertexBuffer::GLTypeByte;   }
-                if constexpr (std::is_same<T , unsigned char>())  { GLType = RawVertexBuffer::GLTypeUByte;  }
-                if constexpr (std::is_same<T , short>())          { GLType = RawVertexBuffer::GLTypeShort;  }
-                if constexpr (std::is_same<T , unsigned short>()) { GLType = RawVertexBuffer::GLTypeUShort; }
-                if constexpr (std::is_same<T , int>())            { GLType = RawVertexBuffer::GLTypeInt;    }
-                if constexpr (std::is_same<T , unsigned int>())   { GLType = RawVertexBuffer::GLTypeUInt;   }
-                if constexpr (std::is_same<T , float>())          { GLType = RawVertexBuffer::GLTypeFloat;  }
-                if constexpr (std::is_same<T , double>())         { GLType = RawVertexBuffer::GLTypeDouble; }
+            VertexBuffer() : m_ValueCount(0) {
+                if constexpr (std::is_same<T , char>())           { m_GLType = RawVertexBuffer::m_GLTypeByte;   }
+                if constexpr (std::is_same<T , unsigned char>())  { m_GLType = RawVertexBuffer::m_GLTypeUByte;  }
+                if constexpr (std::is_same<T , short>())          { m_GLType = RawVertexBuffer::m_GLTypeShort;  }
+                if constexpr (std::is_same<T , unsigned short>()) { m_GLType = RawVertexBuffer::m_GLTypeUShort; }
+                if constexpr (std::is_same<T , int>())            { m_GLType = RawVertexBuffer::m_GLTypeInt;    }
+                if constexpr (std::is_same<T , unsigned int>())   { m_GLType = RawVertexBuffer::m_GLTypeUInt;   }
+                if constexpr (std::is_same<T , float>())          { m_GLType = RawVertexBuffer::m_GLTypeFloat;  }
+                if constexpr (std::is_same<T , double>())         { m_GLType = RawVertexBuffer::m_GLTypeDouble; }
             }
             ~VertexBuffer() {}
 
-            inline uint32_t getTypeSize() const override { return sizeof(T); }
+            inline uint32_t GetTypeSize() const override { return sizeof(T); }
 
-            void pushVertex(const std::vector<T>& vert) {
+            void PushVertex(const std::vector<T>& vert) {
 
                 uint32_t receivedVals = (uint32_t)vert.size();
 
                 Y_ASSERT(vert.size() > 0 , "Attempting to Push Empty Vertex");
-                if (dataVec.size() == 0) {
-                    valueCount = (uint32_t)vert.size();
+                if (m_DataVec.size() == 0) {
+                    m_ValueCount = (uint32_t)vert.size();
                 }
 
-                Y_ASSERT(vert.size() == valueCount , "Attempting to Push an Invalid Vertex");
-                if (vert.size() == valueCount) {
-                    vertCount++;
-                    dataVec.insert(dataVec.end() , vert.begin() , vert.end());
+                Y_ASSERT(vert.size() == m_ValueCount , "Attempting to Push an Invalid Vertex");
+                if (vert.size() == m_ValueCount) {
+                    m_VertCount++;
+                    m_DataVec.insert(m_DataVec.end() , vert.begin() , vert.end());
                 }
 
                 return;
             } 
 
-            void upload(bool dynamic = false) override {
+            void Upload(bool dynamic = false) override {
                 
-                stride *= sizeof(T);
-                size = sizeof(T) * (uint32_t)dataVec.size();
+                m_Stride *= sizeof(T);
+                m_Size = sizeof(T) * (uint32_t)m_DataVec.size();
 
-                Y_ASSERT(size > 0 , "Attempting to Upload Empty Vertex");
+                Y_ASSERT(m_Size > 0 , "Attempting to Upload Empty Vertex");
 
-                data = &dataVec[0];
-                RawVertexBuffer::upload(dynamic);
+                m_Data = &m_DataVec[0];
+                RawVertexBuffer::Upload(dynamic);
 
                 return;
             }
     };
 
     class VertexArray {
-        uint32_t vao , ebo;
-        uint32_t vertCount , eltCount;
-        uint32_t attribCount;
-        bool valid;
-        std::vector<std::unique_ptr<RawVertexBuffer>> vbos;
-        std::string name , path;
+        uint32_t m_Vao , m_Ebo;
+        uint32_t m_VertCount , m_EltCount;
+        uint32_t m_AttribCount;
+        bool m_Valid;
+        std::vector<std::unique_ptr<RawVertexBuffer>> m_Vbos;
+        std::string m_Name , m_Path;
         public:
             VertexArray();
             ~VertexArray();
 
-            inline uint32_t getVertCount() const { return vertCount; }
-            inline uint32_t getEltCount() const  { return eltCount; }
-            inline bool isValid() const          { return valid; }
+            inline uint32_t GetVertCount() const { return m_VertCount; }
+            inline uint32_t GetEltCount() const  { return m_EltCount; }
+            inline bool IsValid() const          { return m_Valid; }
 
-            void pushBuffer(std::unique_ptr<RawVertexBuffer> vbo);
-            void setElements(const std::vector<uint32_t>& elements);
+            void PushBuffer(std::unique_ptr<RawVertexBuffer> vbo);
+            void SetElements(const std::vector<uint32_t>& elements);
 
-            void upload();
+            void Upload();
 
-            void bind();
-            void unbind();
+            void Bind();
+            void Unbind();
 
-            inline std::string getName() const { return name; }
-            inline void setName(const std::string& name) { this->name = name; }
-            inline std::string getPath() const { return path; }
-            inline void setPath(const std::string& path) { this->path = path; }
+            inline std::string GetName() const { return m_Name; }
+            inline void SetName(const std::string& name) { m_Name = name; }
+            inline std::string GetPath() const { return m_Path; }
+            inline void SetPath(const std::string& path) { m_Path = path; }
 
     };
 

@@ -35,25 +35,25 @@ namespace graphics {
     void Material::updateShaderUniforms() {
         if (shader != nullptr) {
             for (const auto& itr : uniformInts) 
-                shader->setUniformInt(itr.first , itr.second);
+                shader->SetUniformInt(itr.first , itr.second);
 
             for (const auto& itr : uniformFloats) 
-                shader->setUniformFloat(itr.first , itr.second);
+                shader->SetUniformFloat(itr.first , itr.second);
 
             for (const auto& itr : uniformFloat2s) 
-                shader->setUniformFloat2(itr.first , itr.second);
+                shader->SetUniformFloat2(itr.first , itr.second);
 
             for (const auto& itr : uniformFloat3s) 
-                shader->setUniformFloat3(itr.first , itr.second);
+                shader->SetUniformFloat3(itr.first , itr.second);
 
             for (const auto& itr : uniformFloat4s) 
-                shader->setUniformFloat4(itr.first , itr.second);
+                shader->SetUniformFloat4(itr.first , itr.second);
 
             for (const auto& itr : uniformMat3s) 
-                shader->setUniformMat3(itr.first , itr.second);
+                shader->SetUniformMat3(itr.first , itr.second);
 
             for (const auto& itr : uniformMat4s) 
-                shader->setUniformMat4(itr.first , itr.second);
+                shader->SetUniformMat4(itr.first , itr.second);
         }
     }
 

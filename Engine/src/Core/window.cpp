@@ -81,22 +81,22 @@ namespace core {
 	}
 
 	void Window::RenderToScreen() {
-		Y_ASSERT(m_VA->isValid() , "Attempting to render with invalid VertexArray -> Did you forget to call upload()?");
-		if (m_VA->isValid()) {
+		Y_ASSERT(m_VA->IsValid() , "Attempting to render with invalid VertexArray -> Did you forget to call upload()?");
+		if (m_VA->IsValid()) {
 			glClearColor(0 , 0 , 0 , 1);
-			m_VA->bind();
+			m_VA->Bind();
 			glBindTexture(GL_TEXTURE_2D , m_FrameBuffer->getTextureID()); Y_CHECK_GL_ERROR;
-			m_Shader->bind();
+			m_Shader->Bind();
 
 			glm::vec2 scale = m_FBufferSize / (glm::vec2)GetSize();
 			glm::mat4 model(1.0);
 			model = glm::scale(model , {scale.x , scale.y , 1.f });
-			m_Shader->setUniformMat4("model" , model);
-			glDrawElements(GL_TRIANGLES , m_VA->getEltCount() , GL_UNSIGNED_INT , 0); Y_CHECK_GL_ERROR;
+			m_Shader->SetUniformMat4("model" , model);
+			glDrawElements(GL_TRIANGLES , m_VA->GetEltCount() , GL_UNSIGNED_INT , 0); Y_CHECK_GL_ERROR;
 
-			m_Shader->unbind();
+			m_Shader->Unbind();
 			glBindTexture(GL_TEXTURE_2D , 0); Y_CHECK_GL_ERROR;
-			m_VA->unbind();
+			m_VA->Unbind();
 		}
 
 		return;

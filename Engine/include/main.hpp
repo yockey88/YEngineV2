@@ -7,7 +7,6 @@
 Y::App* CreateApp();
 
 int main(int argc , char** argv) {
-    std::string AppName = argv[0];
     /*
         auto config = RuntimeConfig ConfigEngine(AppConfig configuration || App* app);
             <R -> ||> Depends on if we want to do something with the APP or the APP'S DATA </R>
@@ -15,6 +14,8 @@ int main(int argc , char** argv) {
         if (!Run(App* appToRun , AppRuntimeData dataNeededToRunApp))
             return 1;
     */
+    std::string AppName = argv[0];
+
     if (!Y::Engine::Instance().Run(CreateApp())) {
         return 1;
     }

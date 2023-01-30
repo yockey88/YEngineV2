@@ -1,5 +1,6 @@
 #include "engine.hpp"
 #include "log.hpp"
+#include "Core/factory.hpp"
 #include "Managers/renderManager.hpp"
 #include "Graphics/framebuffer.hpp"
 #include "Graphics/helper.hpp"
@@ -44,19 +45,37 @@ namespace managers {
         return;
     }
 
-    void RenderManager::PushCamera(std::shared_ptr<graphics::Camera> newCamera) {
+    void RenderManager::PushOrthoCamera(std::shared_ptr<graphics::OrthoCamera> newCamera) {
 
         Y_ASSERT(newCamera != nullptr , "Camera is Null");
-        m_Cameras.push(newCamera);
+        m_OrthoCameras.push(newCamera);
 
         return;
     }
 
-    void RenderManager::PopCamera() {
+    void RenderManager::PopOrthoCamera() {
 
-        Y_ASSERT(m_Cameras.size() > 0 , "Render Manager::popCamera() - empty stack");
-        if (m_Cameras.size() > 0) {
-            m_Cameras.pop();
+        Y_ASSERT(m_OrthoCameras.size() > 0 , "Render Manager::PopOrthoCamera() - empty stack");
+        if (m_OrthoCameras.size() > 0) {
+            m_OrthoCameras.pop();
+        }
+
+        return;
+    }
+
+    void RenderManager::PushPerspectiveCamera(std::shared_ptr<graphics::PerspectiveCamera> newCamera) {
+
+        Y_ASSERT(newCamera != nullptr , "Camera is Null");
+        m_PerspectiveCameras.push(newCamera);
+
+        return;
+    }
+
+    void RenderManager::PopPerspectiveCamera() {
+
+        Y_ASSERT(m_PerspectiveCameras.size() > 0 , "Render Manager::PopOrthoCamera() - empty stack");
+        if (m_PerspectiveCameras.size() > 0) {
+            m_PerspectiveCameras.pop();
         }
 
         return;
@@ -74,6 +93,8 @@ namespace managers {
 
 		glEnable(GL_BLEND); Y_CHECK_GL_ERROR;
 		glBlendFunc(GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA); Y_CHECK_GL_ERROR;
+
+        glEnable(GL_PROGRAM_POINT_SIZE); Y_CHECK_GL_ERROR;
 
         Clear();
 

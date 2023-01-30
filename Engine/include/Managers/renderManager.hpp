@@ -16,21 +16,27 @@ namespace managers {
     class RenderManager {
         friend class graphics::rendercommands::PushFramebuffer;
         friend class graphics::rendercommands::PopFramebuffer;
-        friend class graphics::rendercommands::PushCamera;
-        friend class graphics::rendercommands::PopCamera;
+        friend class graphics::rendercommands::PushOrthoCamera;
+        friend class graphics::rendercommands::PopOrthoCamera;
+        friend class graphics::rendercommands::PushPerspectiveCamera;
+        friend class graphics::rendercommands::PopPerspectiveCamera;
 
         std::queue<std::unique_ptr<graphics::rendercommands::RenderCommand>> m_RenderCmnds;
         std::stack<std::shared_ptr<graphics::Framebuffer>> m_Framebuffers;
-        std::stack<std::shared_ptr<graphics::Camera>> m_Cameras;
+        std::stack<std::shared_ptr<graphics::OrthoCamera>> m_OrthoCameras;
+        std::stack<std::shared_ptr<graphics::PerspectiveCamera>> m_PerspectiveCameras;
 
         void PushFrameBuffer(std::shared_ptr<graphics::Framebuffer> newBuffer);
         void PopFrameBuffer(); 
-        void PushCamera(std::shared_ptr<graphics::Camera> newCamera);
-        void PopCamera();
+        void PushOrthoCamera(std::shared_ptr<graphics::OrthoCamera> newCamera);
+        void PopOrthoCamera();
+        void PushPerspectiveCamera(std::shared_ptr<graphics::PerspectiveCamera> newCamera);
+        void PopPerspectiveCamera();
         public:
             RenderManager();
 
-            inline graphics::Camera* GetActiveCamera() const { return ((m_Cameras.size() > 0) ? m_Cameras.top().get() : nullptr); }
+            inline graphics::OrthoCamera* GetActiveOrthoCamera() const { return ((m_OrthoCameras.size() > 0) ? m_OrthoCameras.top().get() : nullptr); }
+            inline graphics::PerspectiveCamera* GetActivePerspectiveCamera() const { return ((m_PerspectiveCameras.size() > 0) ? m_PerspectiveCameras.top().get() : nullptr); }
 
             void Initialize();
             void Shutdown();
@@ -40,10 +46,7 @@ namespace managers {
             void SetWireFrameMode(bool enabled);
 
             void Submit(std::unique_ptr<graphics::rendercommands::RenderCommand> rc);
-            
-            // executes commands in order they were received
             void Flush();
-
             void Clear();
     };
 

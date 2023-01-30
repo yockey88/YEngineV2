@@ -24,10 +24,12 @@ workspace "EngineY"
     externals["boost"] = "external/boost"
     externals["imguizmo"] = "external/imguizmo"
     externals["box2d"] = "external/box2d"
+    externals["react3d"] = "external/ReactPhysics3D"
 
     -- Glad before all
     include "external/glad"
     include "external/box2d"
+    include "external/ReactPhysics3D"
 
     --------------------
     -- Engine Library --
@@ -57,7 +59,9 @@ workspace "EngineY"
             "%{externals.imguizmo}/**.h",
             "%{externals.imguizmo}/**.cpp",
             "%{externals.box2d}/include/**.h",
-            "%{externals.box2d}/src/**.cpp"
+            "%{externals.box2d}/src/**.cpp",
+            "%{externals.react3d}/include/**.h",
+            "%{externals.react3d}/src/**.cpp"
         }
 
         externalincludedirs {
@@ -72,10 +76,11 @@ workspace "EngineY"
             "%{externals.ImEntt}",
             "%{externals.json}/include",
             "%{externals.imguizmo}",
-            "%{externals.box2d}/include"
+            "%{externals.box2d}/include",
+            "%{externals.react3d}/include"
         }
 
-        flags { "FatalWarnings" }
+        -- flags { "FatalWarnings" }
 
         defines {
             "GLFW_INCLUDE_NONE" -- Ensures glad doesnt include glfw
@@ -95,7 +100,8 @@ workspace "EngineY"
             links {
                 "SDL2",
                 "glad",
-                "box2d"
+                "box2d",
+                "React3D"
             }
 
         filter { "system:macosx" , "configurations:*" }
@@ -162,10 +168,11 @@ workspace "EngineY"
             "%{externals.ImEntt}",
             "%{externals.json}/include",
             "%{externals.imguizmo}",
-            "%{externals.box2d}/include"
+            "%{externals.box2d}/include",
+            "%{externals.react3d}/include"
         }
 
-        flags { "FatalWarnings" }
+        -- flags { "FatalWarnings" }
 
         filter { "system:windows" , "configurations:*" }
             systemversion "latest"
@@ -182,7 +189,8 @@ workspace "EngineY"
                 "Engine",
                 "SDL2",
                 "glad",
-                "box2d"
+                "box2d",
+                "React3D"
             }
 
         filter { "system:macosx" , "configurations:*" }
@@ -198,7 +206,8 @@ workspace "EngineY"
                 "Engine",
                 "SDL2.framework",
                 "glad",
-                "box2d"
+                "box2d",
+                "React3D"
             }
 
         filter { "system:linux" , "configurations:*" }
@@ -209,7 +218,8 @@ workspace "EngineY"
                 "Engine",
                 "SDL2",
                 "glad",
-                "box2d"
+                "box2d",
+                "React3D"
             }
 
         filter "configurations:Debug"
