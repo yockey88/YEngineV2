@@ -1,11 +1,11 @@
-#version 410 core
-
-in vec3 pos;
+#version 460 core
+in float OSize;
+in vec3 OPos;
+in vec3 OColor;
+ 
 
 out vec4 outColor;
-
-uniform vec4 col = vec4(1.0);
 void main() {
-    if (length(pos) > 0.5) discard;
-    outColor = col;
+    if (length(OPos) > OSize) discard;
+    outColor = vec4(OColor , 1.0);
 }

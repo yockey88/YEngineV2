@@ -8,6 +8,7 @@
 #include "Graphics/material.hpp"
 
 #include "Input/keyboard.hpp"
+#include "Input/mouse.hpp"
 
 #include "glm/gtc/matrix_transform.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
@@ -19,17 +20,20 @@ class Sandbox : public App {
 	core::WindowProperties m_WinProps; 
 	std::shared_ptr<graphics::PerspectiveCamera> camera;
 
-	std::shared_ptr<graphics::VertexArray> VA;
+	// std::shared_ptr<graphics::VertexArray> VA;
 
 	std::shared_ptr<graphics::VertexArray> xyPlane;
 	std::shared_ptr<graphics::VertexArray> yzPlane;
 	std::shared_ptr<graphics::VertexArray> zxPlane;
 	std::shared_ptr<graphics::Shader> shader;
 
-	glm::mat4 cubeModel;
+	// glm::mat4 cubeModel;
+
 	glm::mat4 xyModel;
 	glm::mat4 yzModel;
 	glm::mat4 zxModel;
+	
+	glm::vec2 mousePos;
 
 	core::WindowProperties SetWinProps();
 
@@ -52,10 +56,10 @@ class Sandbox : public App {
 
 			camera->SetUp(cameraUp);
 
-			VA = core::Factory::CreateCubeMesh({ 1.f , 1.f , 1.f } , { 1.f , 0.f , 0.f } , { 0.f , 1.f , 0.f } , { 0.f , 0.f , 1.f });
+			// VA = core::Factory::CreateCubeMesh({ 1.f , 1.f , 1.f } , { 1.f , 0.f , 0.f } , { 0.f , 1.f , 0.f } , { 0.f , 0.f , 1.f });
 
-			cubeModel = glm::mat4(1.f);
-			cubeModel = glm::translate(cubeModel , { 0.f , 0.f , 0.f }) * glm::scale(cubeModel , { 1.f , 1.f , 1.f });
+			// cubeModel = glm::mat4(1.f);
+			// cubeModel = glm::translate(cubeModel , { 0.f , 0.f , 0.f }) * glm::scale(cubeModel , { 1.f , 1.f , 1.f });
 
 			xyPlane = core::Factory::CreateSquareMesh({ 1.f , 0.f , 0.f });
 			yzPlane = core::Factory::CreateSquareMesh({ 0.f , 1.f , 0.f });
@@ -72,11 +76,15 @@ class Sandbox : public App {
 						glm::rotate(yzModel , glm::radians(90.f) , { 0.f , 1.f , 0.f });
 			zxModel = glm::translate(zxModel , { 5.f , 0.f , 5.f }) * glm::scale(zxModel , { 10.f , 10.f , 10.f }) * 
 						glm::rotate(zxModel , glm::radians(90.f) , { 1.f , 0.f , 0.f });
+
+			mousePos = glm::vec2{ (float)input::mouse::X() , (float)input::mouse::Y() };
 		}
 
 		virtual void Shutdown() override { }
 
 		virtual void Update(const float& dt) override {
+			mousePos = glm::vec3(0.f);
+
 			if (input::keyboard::key(Y_INPUT_KEY_W)) { camera->SetPos(camera->GetPos() + (0.2f *glm::normalize(camera->GetCameraForward()))); }
 			if (input::keyboard::key(Y_INPUT_KEY_A)) 
 				{ camera->SetPos(camera->GetPos() - (0.2f * glm::normalize(glm::cross(camera->GetCameraForward() , camera->GetCameraUp())))); }
@@ -84,18 +92,18 @@ class Sandbox : public App {
 			if (input::keyboard::key(Y_INPUT_KEY_D)) 
 				{ camera->SetPos(camera->GetPos() + (0.2f * glm::normalize(glm::cross(camera->GetCameraForward() , camera->GetCameraUp())))); }
 		
-			cubeModel = glm::rotate(cubeModel , glm::radians(2.f) , { 1.f , 1.f , 0.f });
+			// cubeModel = glm::rotate(cubeModel , glm::radians(2.f) , { 1.f , 1.f , 0.f });
 		}
 
 		virtual void Render() override {
 			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(PushPerspectiveCamera , camera));
 
-			glm::mat4 model = cubeModel;
-			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , VA , shader , model));
+			// glm::mat4 model = cubeModel;
+			// Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , VA , shader , model));
 
-			// Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , xyPlane , shader , xyModel));
-			// Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , yzPlane , shader , yzModel));
-			// Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , zxPlane , shader , zxModel));
+			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , xyPlane , shader , xyModel));
+			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , yzPlane , shader , yzModel));
+			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , zxPlane , shader , zxModel));
 
 			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(PopPerspectiveCamera));
 		}

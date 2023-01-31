@@ -1,9 +1,6 @@
-#version 410 core
-in vec2 uvs;
-
+#version 460 core
+in vec3 OColor;
 out vec4 outColor;
-
-uniform sampler2D tex;
 void main() {
-    outColor = texture(tex , uvs);
+    outColor = vec4(OColor.x , OColor.y , OColor.z , 1.0);
 }

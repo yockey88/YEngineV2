@@ -13,7 +13,7 @@ namespace graphics {
         int width = Y_WINDOW.GetSize().x;
         int height = Y_WINDOW.GetSize().y;
 
-        m_ProjMatrix = glm::perspective(glm::radians(m_Fov) , (float)width / (float)height , m_Close , m_Far);
+        m_ProjMatrix = glm::perspective(glm::radians(m_Fov) , ((float)width / (float)height) , m_Close , m_Far);
 
     }
 

@@ -14,7 +14,6 @@ int main(int argc , char** argv) {
         if (!Run(App* appToRun , AppRuntimeData dataNeededToRunApp))
             return 1;
     */
-    std::string AppName = argv[0];
 
     if (!Y::Engine::Instance().Run(CreateApp())) {
         return 1;

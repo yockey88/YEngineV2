@@ -2,6 +2,7 @@
 .vscode/
 bin*/
 logs/
+Docs/
 
 *.user
 *.DS_STORE

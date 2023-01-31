@@ -1,11 +1,8 @@
-#version 410 core
-layout (location = 0) in vec2 position;
-layout (location = 1) in vec2 texcoords;
-
-out vec2 uvs;
-
-uniform mat4 model = mat4(1.0);
+#version 460 core
+layout (location = 0) in vec3 position;
+layout (location = 1) in vec3 color;
+out vec3 OColor;
 void main() {
-    uvs = texcoords;
-    gl_Position = model * vec4(position , 0.0 , 1.0);
+    OColor = color;
+    gl_Position = vec4(position.x , position.y , position.z , 1.0);
 }
