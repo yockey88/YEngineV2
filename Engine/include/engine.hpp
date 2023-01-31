@@ -49,11 +49,6 @@ namespace Y {
 		public:
 			static Engine& Instance();
 			~Engine() { Shutdown();  }
-			
-			// RuntimeConfig ConfigEngine(AppConfig configuration || App* app);
-				// <R -> ||> Depends on if we want to do something with the APP or the APP'S DATA </R>
-			// <?> AppRuntimeData </?> Initialize(App* appToInit , RuntimeConfig configToInit);
-			// Run(App* appToRun , AppRuntimeData dataNeededToRunApp);
 
 			void GetInfo();
 			bool Run(App* app);

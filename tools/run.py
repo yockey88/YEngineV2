@@ -9,7 +9,7 @@ exepath = "{}/bin/{}/{}".format(os.getcwd() , config , proj)
 ret = 0
 
 if globals.IsWindows():
-    ret = subprocess.call(["cmd.exe" , "/c" , "{}\\run.bat".format(globals.TOOLS_DIR) , config , proj , "Hello_Cmnd_Line"] , cwd=os.getcwd())
+    ret = subprocess.call(["cmd.exe" , "/c" , "{}\\run.bat".format(globals.TOOLS_DIR) , config , proj] , cwd=os.getcwd())
 else:
     ret = subprocess.call(["{}".format(exepath)] , cwd=exepath)
 

@@ -19,6 +19,19 @@ namespace graphics {
 
     void PerspectiveCamera::RecalculateViewMatrix() {
 
+        /*
+            calculate quaternion to rotate camera based off roll pitch yaw ???
+        */
+
+       glm::mat4 rot = glm::mat4(1.f);
+
+       rot = glm::rotate(rot , glm::radians(m_Yaw) , { 0.f , 1.f , 0.f });
+       m_Forward = glm::vec3(rot * glm::vec4(m_Forward , 1.f));
+
+       rot = glm::rotate(rot , glm::radians(m_Pitch) , { 1.f , 0.f , 0.f });
+       m_Forward = glm::vec3(rot * glm::vec4(m_Forward , 1.f));
+       m_Up = glm::vec3(rot * glm::vec4(m_Up , 1.f));
+
         glm::mat4 view = glm::mat4(1.f);
         view = glm::lookAt(m_Pos , (m_Pos + m_Forward) , m_Up);
         SetViewMat(view);
@@ -47,6 +60,7 @@ namespace graphics {
 
         if (m_Pos != pos) {
             m_Pos = pos;
+            RecalculateProjMatrix();
             RecalculateViewMatrix();
         }
 
@@ -57,6 +71,7 @@ namespace graphics {
         
         if (m_Forward != forward) {
             m_Forward = forward;  
+            RecalculateProjMatrix();
             RecalculateViewMatrix();
         }
 
@@ -66,6 +81,7 @@ namespace graphics {
 
         if (m_Up != up) {
             m_Up = up;  
+            RecalculateProjMatrix();
             RecalculateViewMatrix();
         }
 
@@ -77,6 +93,7 @@ namespace graphics {
             m_Pos = pos;
             m_Forward = forward;
             m_Up = up;
+            RecalculateProjMatrix();
             RecalculateViewMatrix();
         }
         
@@ -89,6 +106,7 @@ namespace graphics {
         if (m_Close != close) {
             m_Close = close;
             RecalculateProjMatrix();
+            RecalculateViewMatrix();
         }
 
         return;
@@ -100,6 +118,7 @@ namespace graphics {
         if (m_Far != Far) {
             m_Far = Far;
             RecalculateProjMatrix();
+            RecalculateViewMatrix();
         }
 
         return;
@@ -109,7 +128,14 @@ namespace graphics {
     void PerspectiveCamera::SetPitch(float pitch) {
 
         if (m_Pitch != pitch) {
-            m_Pitch = pitch;
+            if (m_Pitch >= 90.f) {
+                m_Pitch = 90.f;
+            } else if (m_Pitch <= -89.f) {
+                m_Pitch = -89.f;
+            } else {
+                m_Pitch = pitch;
+            }
+            RecalculateProjMatrix();
             RecalculateViewMatrix();
         }
 
@@ -120,7 +146,14 @@ namespace graphics {
     void PerspectiveCamera::SetYaw(float yaw) {
 
         if (m_Yaw != yaw) {
-            m_Yaw = yaw;
+            if (m_Yaw >= 90.f) {
+                m_Yaw = 90.f;
+            } else if (m_Yaw <= -89.f) {
+                m_Yaw = -89.f;
+            } else {
+                m_Yaw = yaw;
+            }
+            RecalculateProjMatrix();
             RecalculateViewMatrix();
         }
 
@@ -132,6 +165,7 @@ namespace graphics {
 
         if (m_Roll != roll) {
             m_Roll = roll;
+            RecalculateProjMatrix();
             RecalculateViewMatrix();
         }
 
@@ -144,6 +178,7 @@ namespace graphics {
         if (m_Fov != fov) {
             m_Fov = fov;
             RecalculateProjMatrix();
+            RecalculateViewMatrix();
         }
 
         return;

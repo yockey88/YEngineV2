@@ -10,6 +10,7 @@
 #include "Input/keyboard.hpp"
 #include "Input/mouse.hpp"
 
+#include "glm/gtx/rotate_vector.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtc/quaternion.hpp" 
@@ -20,20 +21,15 @@ class Sandbox : public App {
 	core::WindowProperties m_WinProps; 
 	std::shared_ptr<graphics::PerspectiveCamera> camera;
 
-	// std::shared_ptr<graphics::VertexArray> VA;
-
-	std::shared_ptr<graphics::VertexArray> xyPlane;
-	std::shared_ptr<graphics::VertexArray> yzPlane;
-	std::shared_ptr<graphics::VertexArray> zxPlane;
+	std::shared_ptr<graphics::VertexArray> VA;
+	std::shared_ptr<graphics::VertexArray> floor;
 	std::shared_ptr<graphics::Shader> shader;
 
-	// glm::mat4 cubeModel;
-
-	glm::mat4 xyModel;
-	glm::mat4 yzModel;
-	glm::mat4 zxModel;
+	glm::mat4 cubeModel , floorModel;
 	
-	glm::vec2 mousePos;
+	glm::ivec2 currMousePos , lastMousePos;
+
+	float xOffset , yOffset;
 
 	core::WindowProperties SetWinProps();
 
@@ -47,63 +43,50 @@ class Sandbox : public App {
 
 		virtual void Initialize() override {
 			camera = core::Factory::GetPerspectiveCamera();
-			camera->SetPos({ 10.f , 10.f , 10.f });
-			camera->SetForward({ -10.f , -10.f , -10.f });
+			camera->SetPos({ 0.f , 0.f , 7.f });
+			camera->SetForward({ 0.f , 0.f , -1.f});
 
-			glm::mat4 rot = glm::mat4(1.f);
-			rot = glm::rotate(rot , glm::radians(90.f) , { 1.f , 0.f , -1.f });
-			glm::vec3 cameraUp = glm::vec3(rot * glm::vec4(cameraUp , 1.f));
-
-			camera->SetUp(cameraUp);
-
-			// VA = core::Factory::CreateCubeMesh({ 1.f , 1.f , 1.f } , { 1.f , 0.f , 0.f } , { 0.f , 1.f , 0.f } , { 0.f , 0.f , 1.f });
-
-			// cubeModel = glm::mat4(1.f);
-			// cubeModel = glm::translate(cubeModel , { 0.f , 0.f , 0.f }) * glm::scale(cubeModel , { 1.f , 1.f , 1.f });
-
-			xyPlane = core::Factory::CreateSquareMesh({ 1.f , 0.f , 0.f });
-			yzPlane = core::Factory::CreateSquareMesh({ 0.f , 1.f , 0.f });
-			zxPlane = core::Factory::CreateSquareMesh({ 0.f , 0.f , 1.f });
+			floor = core::Factory::CreateSquareMesh({ (float)20 / 255.f , (float)87 / 255.f , (float)20 / 255.f });
+			VA = core::Factory::CreateCubeMesh({ 1.f , 1.f , 1.f } , { 1.f , 0.f , 0.f } , { 0.f , 1.f , 0.f } , { 0.f , 0.f , 1.f });
 
 			shader = core::Factory::LoadBasicCamShader();
 
-			xyModel = glm::mat4(1.f);
-			yzModel = glm::mat4(1.f);
-			zxModel = glm::mat4(1.f);
+			cubeModel = glm::mat4(1.f);
+			cubeModel = glm::translate(cubeModel , { 0.f , 0.f , 0.f }) * glm::scale(cubeModel , { 1.f , 1.f , 1.f });
 
-			xyModel = glm::translate(xyModel , { 5.f , 5.f , 0.f }) * glm::scale(xyModel , { 10.f , 10.f , 10.f });
-			yzModel = glm::translate(yzModel , { 0.f , 5.f , 5.f }) * glm::scale(yzModel , { 10.f , 10.f , 10.f }) * 
-						glm::rotate(yzModel , glm::radians(90.f) , { 0.f , 1.f , 0.f });
-			zxModel = glm::translate(zxModel , { 5.f , 0.f , 5.f }) * glm::scale(zxModel , { 10.f , 10.f , 10.f }) * 
-						glm::rotate(zxModel , glm::radians(90.f) , { 1.f , 0.f , 0.f });
+			floorModel = glm::mat4(1.f);
+			floorModel = glm::translate(floorModel , { 0.f , -4.f , 0.f }) * glm::scale(floorModel , { 100.f , 100.f , 100.f });
+			floorModel = glm::rotate(floorModel , glm::radians(90.f) , { 1.f , 0.f , 0.f });
 
-			mousePos = glm::vec2{ (float)input::mouse::X() , (float)input::mouse::Y() };
+			xOffset = 0.f; // = (float)input::mouse::DX() * -0.05f;
+ 			yOffset = 0.f; // = (float)input::mouse::DY() * -0.05f;
 		}
 
 		virtual void Shutdown() override { }
 
 		virtual void Update(const float& dt) override {
-			mousePos = glm::vec3(0.f);
 
-			if (input::keyboard::key(Y_INPUT_KEY_W)) { camera->SetPos(camera->GetPos() + (0.2f *glm::normalize(camera->GetCameraForward()))); }
+			xOffset = (float)input::mouse::DX() * 0.05f;
+			yOffset = (float)input::mouse::DY() * 0.05f;
+
+			float yaw = xOffset;
+			float pitch = yOffset;
+
+			if (input::keyboard::key(Y_INPUT_KEY_W)) { camera->SetPos(camera->GetPos() + (0.2f * glm::normalize(camera->GetCameraForward()))); }
 			if (input::keyboard::key(Y_INPUT_KEY_A)) 
 				{ camera->SetPos(camera->GetPos() - (0.2f * glm::normalize(glm::cross(camera->GetCameraForward() , camera->GetCameraUp())))); }
-			if (input::keyboard::key(Y_INPUT_KEY_S)) { camera->SetPos(camera->GetPos() - (0.2f *glm::normalize(camera->GetCameraForward()))); }
+			if (input::keyboard::key(Y_INPUT_KEY_S)) { camera->SetPos(camera->GetPos() - (0.2f * glm::normalize(camera->GetCameraForward()))); }
 			if (input::keyboard::key(Y_INPUT_KEY_D)) 
 				{ camera->SetPos(camera->GetPos() + (0.2f * glm::normalize(glm::cross(camera->GetCameraForward() , camera->GetCameraUp())))); }
 		
-			// cubeModel = glm::rotate(cubeModel , glm::radians(2.f) , { 1.f , 1.f , 0.f });
+			cubeModel = glm::rotate(cubeModel , glm::radians(2.f) , { 1.f , 1.f , -1.f });
 		}
 
 		virtual void Render() override {
 			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(PushPerspectiveCamera , camera));
 
-			// glm::mat4 model = cubeModel;
-			// Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , VA , shader , model));
-
-			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , xyPlane , shader , xyModel));
-			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , yzPlane , shader , yzModel));
-			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , zxPlane , shader , zxModel));
+			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , floor , shader , floorModel));
+			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , VA , shader , cubeModel));
 
 			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(PopPerspectiveCamera));
 		}
