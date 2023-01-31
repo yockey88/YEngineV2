@@ -2,7 +2,6 @@
 .vscode/
 bin*/
 logs/
-Docs*/
 
 *.user
 *.DS_STORE
@@ -12,5 +11,3 @@ Docs*/
 *.sln
 *Makefile
 *.pyc
-ToDo.md
-documentation/
