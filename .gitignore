@@ -2,7 +2,7 @@
 .vscode/
 bin*/
 logs/
-Docs/
+Docs*/
 
 *.user
 *.DS_STORE
