@@ -15,6 +15,14 @@ namespace core {
 
     }
 
+    std::shared_ptr<graphics::PerspectiveCamera> Factory::GetPerspectiveCamera() {
+        std::shared_ptr<graphics::PerspectiveCamera> camera = std::make_shared<graphics::PerspectiveCamera>();
+        camera->SetPos({ 0.f , 0.f , 5.f });
+        camera->SetTarget({ 0.f , 0.f , 0.f });
+        camera->SetUp({ 0.f , 1.f , 0.f });
+        return camera;
+    }
+
     std::shared_ptr<graphics::VertexArray> Factory::CreateWindowMesh() {
         
         std::shared_ptr<graphics::VertexArray> VA = std::make_shared<graphics::VertexArray>();
@@ -33,10 +41,10 @@ namespace core {
         return VA;
     }
 
-    std::shared_ptr<graphics::VertexArray> Factory::CreateWhiteSquareMesh() {
+    std::shared_ptr<graphics::VertexArray> Factory::CreateSquareMesh() {
 
         std::shared_ptr<graphics::VertexArray> VA = std::make_shared<graphics::VertexArray>();
-        VA->setName("White Square Mesh");
+        VA->setName("Square Mesh");
         Y_CREATE_VERTEX_BUFFER(vb, float);
 
         vb->pushVertex({  0.5 ,  0.5 , 0.0 , 1.0 , 1.0 , 1.0 });
@@ -51,6 +59,35 @@ namespace core {
 
         return VA;
 
+    }
+
+    std::shared_ptr<graphics::VertexArray> Factory::CreateCubeMesh() {
+
+        std::shared_ptr<graphics::VertexArray> VA = std::make_shared<graphics::VertexArray>();
+        VA->setName("Square Mesh");
+        Y_CREATE_VERTEX_BUFFER(vb, float);
+
+        vb->pushVertex({  0.5 ,  0.5 , 0.5 , 1.0 , 1.0 , 1.0 });
+        vb->pushVertex({  0.5 , -0.5 , 0.5 , 1.0 , 1.0 , 1.0 });
+        vb->pushVertex({ -0.5 , -0.5 , 0.5 , 1.0 , 1.0 , 1.0 });
+        vb->pushVertex({ -0.5 ,  0.5 , 0.5 , 1.0 , 1.0 , 1.0 });
+
+        vb->pushVertex({  0.5 ,  0.5 , -0.5 , 1.0 , 1.0 , 1.0 });
+        vb->pushVertex({  0.5 , -0.5 , -0.5 , 1.0 , 1.0 , 1.0 });
+        vb->pushVertex({ -0.5 , -0.5 , -0.5 , 1.0 , 1.0 , 1.0 });
+        vb->pushVertex({ -0.5 ,  0.5 , -0.5 , 1.0 , 1.0 , 1.0 });
+        vb->setLayout({ 3 , 3 });
+
+        VA->pushBuffer(std::move(vb));
+        VA->setElements({ 0 , 3 , 1 , 1 , 3 , 2 ,
+                          2 , 3 , 7 , 7 , 6 , 2 , 
+                          2 , 6 , 1 , 1 , 6 , 5 , 
+                          5 , 6 , 4 , 4 , 6 , 7 , 
+                          7 , 3 , 4 , 4 , 3 , 0 , 
+                          0 , 1 , 5 , 5 , 4 , 0 });
+        VA->upload();
+
+        return VA;
     }
 
     const std::shared_ptr<graphics::Shader> Factory::LoadShaderFile(const std::string& vpath , const std::string& fpath) {

@@ -1,10 +1,14 @@
 #include "main.hpp"
 
 #include "Core/factory.hpp"
+
 #include "Graphics/camera.hpp"
+#include "Graphics/perspectiveCamera.hpp"
 #include "Graphics/vertex.hpp"
 #include "Graphics/shader.hpp"
 #include "Graphics/material.hpp"
+
+#include "Input/keyboard.hpp"
 
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -12,14 +16,11 @@ namespace Y {
 	
 class Sandbox : public App {
 	core::WindowProperties setWinProps();
-	std::shared_ptr<graphics::Camera> camera;
+	std::shared_ptr<graphics::PerspectiveCamera> camera;
 	std::shared_ptr<graphics::VertexArray> VA;
-	std::shared_ptr<graphics::Material> material;
+	std::shared_ptr<graphics::Shader> shader;
 
-	glm::vec3 camPos{ 0.f , 0.f , 5.f };
-	float camRot = 0.f;
-
-	glm::vec3 pos{ 0.f , 0.f , 1.f } , size{ 1.f , 1.f , 0.f };
+	glm::vec3 pos{ 0.f , 0.f , 0.f } , size{ 1.f , 1.f , 1.f };
 	
 	public:
 		Sandbox() {}
@@ -28,27 +29,33 @@ class Sandbox : public App {
 		virtual core::WindowProperties GetWindowProperties() override { return setWinProps(); }
 
 		virtual void Initialize() override {
-			VA = core::Factory::CreateWhiteSquareMesh();
-			std::shared_ptr<graphics::Shader> shader = core::Factory::LoadBasicCamShader();
-			material = std::make_shared<graphics::Material>(shader);
+			camera = core::Factory::GetPerspectiveCamera();
 
-			camera = std::make_shared<graphics::Camera>();
-			camera->setPos(camPos);
-			camera->setViewMat(camPos , camRot);
+			VA = core::Factory::CreateCubeMesh();
+			shader = core::Factory::LoadBasicCamShader();
 		}
 
 		virtual void Shutdown() override { }
 
-		virtual void Update(const float& dt) override {}
+		virtual void Update(const float& dt) override {
+			if (input::keyboard::key(Y_INPUT_KEY_A)) {
+				glm::vec3 newPos = camera->GetPos() - glm::vec3(0.2f , 0.f , 0.f); 
+				camera->SetPos(newPos);
+			}
+			if (input::keyboard::key(Y_INPUT_KEY_D)) {
+				glm::vec3 newPos = camera->GetPos() + glm::vec3(0.2f , 0.f , 0.f); 
+				camera->SetPos(newPos);
+			}
+		}
 
 		virtual void Render() override {
-			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(PushCamera , camera));
+			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(PushPerspectiveCamera , camera));
 
 			glm::mat4 model = glm::mat4(1.f);
 			model = glm::translate(model , pos) * glm::scale(model , size);
-			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArrayMaterial , VA , material , model));
+			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(RenderVertexArray , VA , shader , model));
 
-			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(PopCamera));
+			Y_RENDERER.Submit(Y_SUBMIT_RENDER_CMND(PopPerspectiveCamera));
 		}
 
 		virtual void ImGuiRender() override {}

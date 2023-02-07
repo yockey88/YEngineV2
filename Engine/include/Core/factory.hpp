@@ -2,6 +2,7 @@
 #define FACTORY_HPP
 
 #include "Graphics/camera.hpp"
+#include "Graphics/perspectiveCamera.hpp"
 #include "Graphics/vertex.hpp"
 #include "Graphics/shader.hpp"
 
@@ -17,9 +18,13 @@ namespace core {
     class Factory {
         public:
             static std::shared_ptr<graphics::Camera> GetDefaultCamera();
+            static std::shared_ptr<graphics::PerspectiveCamera> GetPerspectiveCamera();
 
             static std::shared_ptr<graphics::VertexArray> CreateWindowMesh();
-            static std::shared_ptr<graphics::VertexArray> CreateWhiteSquareMesh();
+
+            static std::shared_ptr<graphics::VertexArray> CreateSquareMesh();
+
+            static std::shared_ptr<graphics::VertexArray> CreateCubeMesh();
 
             static const std::shared_ptr<graphics::Shader> LoadShaderFile(const std::string& vpath , const std::string& fpath);
             static const std::shared_ptr<graphics::Shader> LoadBasicCamShader();

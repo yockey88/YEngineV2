@@ -62,6 +62,19 @@ namespace managers {
         return;
     }
 
+    void RenderManager::PushPerspectiveCamera(std::shared_ptr<graphics::PerspectiveCamera> newCamera) {
+        Y_ASSERT(newCamera != nullptr , "Camera is Null");
+        m_PerspectiveCameras.push(newCamera);
+    }
+
+    void RenderManager::PopPerspectiveCamera() {
+        Y_ASSERT(m_PerspectiveCameras.size() > 0 , "Render Manager::popCamera() - empty stack");
+        if (m_PerspectiveCameras.size() > 0) {
+            m_PerspectiveCameras.pop();
+        }
+    }
+
+
     RenderManager::RenderManager() {}
 
     void RenderManager::Initialize() {

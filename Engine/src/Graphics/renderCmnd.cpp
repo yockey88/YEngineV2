@@ -2,6 +2,7 @@
 #include "log.hpp"
 #include "Graphics/renderCmnd.hpp"
 #include "Graphics/camera.hpp"
+#include "Graphics/perspectiveCamera.hpp"
 #include "Graphics/vertex.hpp"
 #include "Graphics/shader.hpp"
 #include "Graphics/texture.hpp"
@@ -25,10 +26,10 @@ namespace rendercommands {
             exShader->bind();
 
             // ToDo -> convert camera to leverage UBOs
-            const auto& cam = Y_RENDERER.GetActiveCamera();
+            const auto& cam = Y_RENDERER.GetActivePerspectiveCamera();
             if (cam) {
-                exShader->setUniformMat4("proj" , cam->getOrthoProjMatrix());
-                exShader->setUniformMat4("view" , cam->getViewMatrix());
+                exShader->setUniformMat4("proj" , cam->GetPerspectiveProjMatrix());
+                exShader->setUniformMat4("view" , cam->GetViewMatrix());
             }
 
             exShader->setUniformMat4("model" , modelMatrix);
@@ -60,10 +61,10 @@ namespace rendercommands {
             exShader->bind();
 
             // ToDo -> convert camera to leverage UBOs
-            const auto& cam = Y_RENDERER.GetActiveCamera();
+            const auto& cam = Y_RENDERER.GetActivePerspectiveCamera();
             if (cam) {
-                exShader->setUniformMat4("proj" , cam->getOrthoProjMatrix());
-                exShader->setUniformMat4("view" , cam->getViewMatrix());
+                exShader->setUniformMat4("proj" , cam->GetPerspectiveProjMatrix());
+                exShader->setUniformMat4("view" , cam->GetViewMatrix());
             }
 
             exShader->setUniformMat4("model" , modelMatrix);
@@ -105,10 +106,10 @@ namespace rendercommands {
                     exTexture->bind();
 
                 // ToDo -> convert camera to leverage UBOs
-                const auto& cam = Y_RENDERER.GetActiveCamera();
+                const auto& cam = Y_RENDERER.GetActivePerspectiveCamera();
                 if (cam) {
-                    exShader->setUniformMat4("proj" , cam->getOrthoProjMatrix()); 
-                    exShader->setUniformMat4("view" , cam->getViewMatrix());
+                    exShader->setUniformMat4("proj" , cam->GetPerspectiveProjMatrix());
+                    exShader->setUniformMat4("view" , cam->GetViewMatrix());
                 }
                 exShader->setUniformMat4("model" , modelMatrix);
 
@@ -161,6 +162,21 @@ namespace rendercommands {
 
     void PopCamera::Execute() {
         Y_RENDERER.PopCamera();
+        return;
+    }
+
+    void PushPerspectiveCamera::Execute() {
+        std::shared_ptr<PerspectiveCamera> c = camera.lock();
+        if (c) {
+            Y_RENDERER.PushPerspectiveCamera(c);
+        } else {
+            Y_WARN("Attempting to execute PushFrameBuffer with invalid data");
+        }
+        return;
+    }
+
+    void PopPerspectiveCamera::Execute() {
+        Y_RENDERER.PopPerspectiveCamera();
         return;
     }
 

@@ -18,19 +18,25 @@ namespace managers {
         friend class graphics::rendercommands::PopFramebuffer;
         friend class graphics::rendercommands::PushCamera;
         friend class graphics::rendercommands::PopCamera;
+        friend class graphics::rendercommands::PushPerspectiveCamera;
+        friend class graphics::rendercommands::PopPerspectiveCamera;
 
         std::queue<std::unique_ptr<graphics::rendercommands::RenderCommand>> m_RenderCmnds;
         std::stack<std::shared_ptr<graphics::Framebuffer>> m_Framebuffers;
         std::stack<std::shared_ptr<graphics::Camera>> m_Cameras;
+        std::stack<std::shared_ptr<graphics::PerspectiveCamera>> m_PerspectiveCameras;
 
         void PushFrameBuffer(std::shared_ptr<graphics::Framebuffer> newBuffer);
         void PopFrameBuffer(); 
         void PushCamera(std::shared_ptr<graphics::Camera> newCamera);
         void PopCamera();
+        void PushPerspectiveCamera(std::shared_ptr<graphics::PerspectiveCamera> newCamera);
+        void PopPerspectiveCamera();
         public:
             RenderManager();
 
             inline graphics::Camera* GetActiveCamera() const { return ((m_Cameras.size() > 0) ? m_Cameras.top().get() : nullptr); }
+            inline graphics::PerspectiveCamera* GetActivePerspectiveCamera() const { return ((m_PerspectiveCameras.size() > 0) ? m_PerspectiveCameras.top().get() : nullptr); }
 
             void Initialize();
             void Shutdown();

@@ -9,6 +9,7 @@ namespace Y {
 namespace graphics {
 
     class Camera;
+    class PerspectiveCamera;
     class VertexArray;
     class Shader;
     class Texture;
@@ -57,7 +58,7 @@ namespace rendercommands {
             virtual void Execute() override;
     };
 
-    class PushFramebuffer: public RenderCommand {
+    class PushFramebuffer : public RenderCommand {
         std::weak_ptr<Framebuffer> fBuffer;
         public:
             PushFramebuffer(std::weak_ptr<Framebuffer> buffer)
@@ -65,22 +66,35 @@ namespace rendercommands {
             virtual void Execute() override;
     };
 
-    class PopFramebuffer: public RenderCommand {
+    class PopFramebuffer : public RenderCommand {
         public:
             PopFramebuffer() {}
             virtual void Execute() override;
     };
 
-    class PushCamera: public RenderCommand {
+    class PushCamera : public RenderCommand {
         std::weak_ptr<Camera> camera;
         public:
             PushCamera(std::weak_ptr<Camera> camera) : camera(camera) {}
             virtual void Execute() override;
     };
 
-    class PopCamera: public RenderCommand {
+    class PopCamera : public RenderCommand {
         public:
             PopCamera() {}
+            virtual void Execute() override;
+    };
+
+    class PushPerspectiveCamera : public RenderCommand {
+        std::weak_ptr<PerspectiveCamera> camera;
+        public:
+            PushPerspectiveCamera(std::weak_ptr<PerspectiveCamera> camera) : camera(camera) {}
+            virtual void Execute() override;
+    };
+
+    class PopPerspectiveCamera : public RenderCommand {
+        public:
+            PopPerspectiveCamera() {}
             virtual void Execute() override;
     };
 
